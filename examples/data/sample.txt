@@ -1,0 +1,11 @@
+This is a sample text file that our File Q&A Agent can analyze.
+
+It contains multiple lines of text with various information:
+- The file was created for testing purposes
+- It demonstrates the agent's ability to read and understand file contents
+- You can ask questions about this file's content
+
+The agent should be able to:
+1. Find this file in the directory
+2. Read its contents
+3. Answer questions about the information contained within 
