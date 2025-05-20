@@ -1,0 +1,26 @@
+task: "code_agent"
+persona:
+  archetype: "senior_developer"
+  temperature: 0.7
+  traits:
+    - "detail-oriented"
+    - "security-conscious"
+protocol: "A2A"
+success:
+  regex: "(?i)(here's|created|updated|fixed)"
+  semantic_score: 0.85
+  task_specific:
+    code_compiles: true
+    tests_pass: true
+budgets:
+  latency_ms: 5000
+  cost_usd: 0.2
+  tokens: 2000
+chaos:
+  drop_tool:
+    - "code_search"
+    - "file_read"
+  inject_latency:
+    - 1000
+    - 2000
+  malform_messages: true
