@@ -90,17 +90,56 @@ jobs:
 
       - name: Check benchmark thresholds
         run: |
-          # Install dependencies for threshold checker
-          pip install pyyaml click
+          # Install dependencies for threshold checker and visualizations
+          pip install pyyaml click numpy scipy matplotlib tabulate plotly
 
           # Find latest results file
           latest_results=$(ls -t benchmark_results/benchmark_results_*.json | head -n1)
 
-          # Run threshold checks
+          # Run threshold checks with enhanced features
           python scripts/check_thresholds.py \
             --results-file "$latest_results" \
             --thresholds-file config/benchmark_thresholds.yaml \
-            --fail-on-warning
+            --history-dir benchmark_results \
+            --output-dir benchmark_reports \
+            --fail-on-warning \
+            --markdown-report
 
-          # Archive thresholds config for reference
-          cp config/benchmark_thresholds.yaml benchmark_results/
+      - name: Upload benchmark reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-reports
+          path: |
+            benchmark_reports/
+            benchmark_results/benchmark_thresholds.yaml
+
+      - name: Deploy benchmark dashboard
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./benchmark_reports
+          destination_dir: reports/${{ github.sha }}
+          enable_jekyll: true
+
+      - name: Comment PR with benchmark results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('benchmark_reports/benchmark_report.md', 'utf8');
+
+            // Add link to interactive dashboard
+            const dashboardUrl = `https://${context.repo.owner}.github.io/${context.repo.repo}/reports/${context.sha}`;
+            const reportWithDashboard = report.replace(
+              '(benchmark_reports/benchmark_report.html)',
+              `(${dashboardUrl}/benchmark_report.html)`
+            );
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: reportWithDashboard
+            });
