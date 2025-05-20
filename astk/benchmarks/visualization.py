@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from scipy import stats
+import plotly.express as px
 
 
 class BenchmarkVisualizer:
@@ -24,6 +25,116 @@ class BenchmarkVisualizer:
             'background': '#f8f9fa',
             'grid': '#e9ecef'
         }
+        self.js_functions = """
+        function filterMetrics() {
+            const metricFilter = document.getElementById('metricFilter').value.toLowerCase();
+            const dateRange = document.getElementById('dateRange').value;
+            const days = parseInt(dateRange) || 30;
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - days);
+            
+            document.querySelectorAll('.metric-container').forEach(container => {
+                const metricName = container.getAttribute('data-metric').toLowerCase();
+                const date = new Date(container.getAttribute('data-date'));
+                const show = metricName.includes(metricFilter) && date >= cutoff;
+                container.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        function toggleView(viewType) {
+            document.querySelectorAll('.view-toggle').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`#${viewType}View`).classList.add('active');
+            
+            document.querySelectorAll('.view-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.querySelector(`#${viewType}Content`).style.display = 'block';
+        }
+
+        function updateThresholds(metricName) {
+            const warningInput = document.getElementById(`${metricName}Warning`);
+            const errorInput = document.getElementById(`${metricName}Error`);
+            const warning = parseFloat(warningInput.value);
+            const error = parseFloat(errorInput.value);
+            
+            // Update plot annotations
+            const plot = document.querySelector(`[data-metric="${metricName}"] .js-plotly-plot`);
+            if (plot && plot.data) {
+                Plotly.relayout(plot, {
+                    shapes: [
+                        {
+                            type: 'line',
+                            y0: warning,
+                            y1: warning,
+                            x0: 0,
+                            x1: 1,
+                            xref: 'paper',
+                            line: { color: 'orange', dash: 'dot' }
+                        },
+                        {
+                            type: 'line',
+                            y0: error,
+                            y1: error,
+                            x0: 0,
+                            x1: 1,
+                            xref: 'paper',
+                            line: { color: 'red', dash: 'dot' }
+                        }
+                    ]
+                });
+            }
+        }
+
+        function exportData(format) {
+            const data = window.benchmarkData;
+            if (format === 'csv') {
+                let csv = 'Scenario,Metric,Value,Date\\n';
+                Object.entries(data).forEach(([scenario, metrics]) => {
+                    Object.entries(metrics).forEach(([metric, values]) => {
+                        values.forEach(v => {
+                            csv += `${scenario},${metric},${v.value},${v.date}\\n`;
+                        });
+                    });
+                });
+                downloadFile(csv, 'benchmark_data.csv', 'text/csv');
+            } else if (format === 'json') {
+                downloadFile(
+                    JSON.stringify(data, null, 2),
+                    'benchmark_data.json',
+                    'application/json'
+                );
+            }
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function createAnnotation(event) {
+            const plot = event.target.closest('.js-plotly-plot');
+            const metricName = plot.closest('[data-metric]').getAttribute('data-metric');
+            const note = prompt('Enter annotation:');
+            if (note) {
+                const annotation = {
+                    x: event.xaxis.d2l(event.xaxis.clickval),
+                    y: event.yaxis.d2l(event.yaxis.clickval),
+                    text: note,
+                    showarrow: true
+                };
+                Plotly.relayout(plot, {
+                    annotations: plot.layout.annotations.concat([annotation])
+                });
+            }
+        }
+        """
 
     def create_metric_trend_plot(
         self,
@@ -110,6 +221,12 @@ class BenchmarkVisualizer:
                 gridcolor=self.color_palette['grid'],
                 title=metric_name
             )
+        )
+
+        # Add click event for annotations
+        fig.update_layout(
+            clickmode='event',
+            hovermode='closest'
         )
 
         return fig
@@ -290,30 +407,106 @@ class BenchmarkVisualizer:
         historical_data: Dict[str, List[Dict[str, Any]]],
         thresholds: Dict[str, Any]
     ) -> str:
-        """Generate an interactive HTML report with all visualizations"""
-        html_parts = ["""
+        """Generate an interactive HTML report with enhanced features"""
+        html_parts = [f"""
         <html>
         <head>
             <title>Benchmark Results</title>
             <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
             <style>
-                body { background-color: #f8f9fa; padding: 20px; }
-                .plot-container { background-color: white; padding: 20px; margin: 20px 0; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+                body {{ background-color: #f8f9fa; padding: 20px; }}
+                .plot-container {{ background-color: white; padding: 20px; margin: 20px 0; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }}
+                .controls {{ position: sticky; top: 0; z-index: 100; background: white; padding: 15px; border-bottom: 1px solid #dee2e6; margin-bottom: 20px; }}
+                .view-toggle.active {{ background-color: #0d6efd; color: white; }}
+                .threshold-control {{ margin: 10px 0; }}
+                .annotation-tip {{ font-size: 0.8em; color: #6c757d; }}
             </style>
+            <script>
+                {self.js_functions}
+            </script>
         </head>
         <body>
             <div class="container">
+                <div class="controls">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <input type="text" class="form-control" id="metricFilter" 
+                                   placeholder="Filter metrics..." onkeyup="filterMetrics()">
+                        </div>
+                        <div class="col">
+                            <select class="form-select" id="dateRange" onchange="filterMetrics()">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <div class="btn-group">
+                                <button class="btn btn-outline-primary view-toggle active" 
+                                        id="trendView" onclick="toggleView('trend')">Trends</button>
+                                <button class="btn btn-outline-primary view-toggle" 
+                                        id="distributionView" onclick="toggleView('distribution')">Distributions</button>
+                                <button class="btn btn-outline-primary view-toggle" 
+                                        id="correlationView" onclick="toggleView('correlation')">Correlations</button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" 
+                                        type="button" data-bs-toggle="dropdown">
+                                    Export Data
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="exportData('csv')">CSV</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportData('json')">JSON</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <h1 class="mb-4">Benchmark Results</h1>
+                <p class="annotation-tip">💡 Tip: Click on any plot to add annotations!</p>
         """]
 
+        # Prepare benchmark data for export
+        benchmark_data = {}
         for scenario in scenario_results:
             scenario_name = scenario["scenario_name"]
             historical = historical_data.get(scenario_name, [])
 
             html_parts.append(f'<h2 class="mt-5">{scenario_name}</h2>')
 
-            # Add trend plots for key metrics
+            # Add threshold controls
+            html_parts.append("""
+                <div class="threshold-control">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Warning Threshold:</label>
+                            <input type="number" class="form-control" 
+                                   id="{metric}Warning" 
+                                   value="{warning}"
+                                   onchange="updateThresholds('{metric}')">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Error Threshold:</label>
+                            <input type="number" class="form-control" 
+                                   id="{metric}Error" 
+                                   value="{error}"
+                                   onchange="updateThresholds('{metric}')">
+                        </div>
+                    </div>
+                </div>
+            """)
+
+            # Create view sections
+            html_parts.append("""
+                <div id="trendContent" class="view-content">
+            """)
+
             key_metrics = ["error_rate", "latency.p95",
                            "throughput.conversations_per_minute"]
             for metric in key_metrics:
@@ -322,14 +515,30 @@ class BenchmarkVisualizer:
                     ".")[1]] if "." in metric else h[metric] for h in historical]
                 baseline_mean = statistics.mean(values) if values else None
 
+                # Store data for export
+                if scenario_name not in benchmark_data:
+                    benchmark_data[scenario_name] = {}
+                benchmark_data[scenario_name][metric] = [
+                    {"date": str(d), "value": v} for d, v in zip(dates, values)
+                ]
+
                 fig = self.create_metric_trend_plot(
                     dates, values, baseline_mean,
                     f'{metric} Trend', metric
                 )
-                html_parts.append(
-                    f'<div class="plot-container">{fig.to_html(full_html=False)}</div>')
+                html_parts.append(f'''
+                    <div class="plot-container metric-container" 
+                         data-metric="{metric}"
+                         data-date="{max(dates) if dates else ''}">{fig.to_html(full_html=False)}</div>
+                ''')
 
-            # Add distribution plots
+            html_parts.append("</div>")  # End trend view
+
+            # Distribution view
+            html_parts.append("""
+                <div id="distributionContent" class="view-content" style="display: none;">
+            """)
+
             for metric in key_metrics:
                 values = [h[metric.split(".")[0]][metric.split(
                     ".")[1]] if "." in metric else h[metric] for h in historical]
@@ -338,10 +547,19 @@ class BenchmarkVisualizer:
 
                 fig = self.create_metric_distribution_plot(
                     values, current, metric)
-                html_parts.append(
-                    f'<div class="plot-container">{fig.to_html(full_html=False)}</div>')
+                html_parts.append(f'''
+                    <div class="plot-container metric-container" 
+                         data-metric="{metric}"
+                         data-date="{max(dates) if dates else ''}">{fig.to_html(full_html=False)}</div>
+                ''')
 
-            # Add correlation plot
+            html_parts.append("</div>")  # End distribution view
+
+            # Correlation view
+            html_parts.append("""
+                <div id="correlationContent" class="view-content" style="display: none;">
+            """)
+
             metrics_data = {}
             for metric in key_metrics:
                 metrics_data[metric] = [h[metric.split(".")[0]][metric.split(
@@ -351,23 +569,18 @@ class BenchmarkVisualizer:
             html_parts.append(
                 f'<div class="plot-container">{fig.to_html(full_html=False)}</div>')
 
-            # Add radar plot
-            current_metrics = {}
-            baseline_metrics = {}
-            for metric in key_metrics:
-                current = scenario[metric.split(".")[0]][metric.split(
-                    ".")[1]] if "." in metric else scenario[metric]
-                baseline = statistics.mean([h[metric.split(".")[0]][metric.split(
-                    ".")[1]] if "." in metric else h[metric] for h in historical])
-                current_metrics[metric] = current
-                baseline_metrics[metric] = baseline
+            html_parts.append("</div>")  # End correlation view
 
-            fig = self.create_radar_plot(
-                current_metrics, baseline_metrics, thresholds)
-            html_parts.append(
-                f'<div class="plot-container">{fig.to_html(full_html=False)}</div>')
-
-        html_parts.append("""
+        # Add benchmark data for export
+        html_parts.append(f"""
+                <script>
+                    window.benchmarkData = {json.dumps(benchmark_data)};
+                    
+                    // Add click handlers for annotations
+                    document.querySelectorAll('.js-plotly-plot').forEach(plot => {{
+                        plot.on('plotly_click', createAnnotation);
+                    }});
+                </script>
             </div>
         </body>
         </html>
