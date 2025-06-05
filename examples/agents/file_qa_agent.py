@@ -4,6 +4,7 @@ Simple File Q&A Agent using LangChain
 """
 
 import os
+import sys
 from typing import List, Optional
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
@@ -82,19 +83,24 @@ class FileQAAgent:
         return response["output"]
 
 
-if __name__ == "__main__":
-    import asyncio
+async def main():
+    # Create agent
+    agent = FileQAAgent()
 
-    async def main():
-        # Create agent
-        agent = FileQAAgent()
-
-        # Example interaction
-        response = await agent.chat("What files are in the current directory?")
+    # Get query from command line arguments or use default queries
+    if len(sys.argv) > 1:
+        query = " ".join(sys.argv[1:])
+        response = await agent.chat(query)
+        print(f"Agent: {response}")
+    else:
+        # Example interactions
+        response = await agent.chat("What files are in the examples/data directory?")
         print(f"Agent: {response}\n")
 
-        response = await agent.chat("Can you read the contents of requirements.txt?")
+        response = await agent.chat("Can you read and summarize the contents of examples/data/sample.txt?")
         print(f"Agent: {response}")
 
-    # Run example
+
+if __name__ == "__main__":
+    import asyncio
     asyncio.run(main())
