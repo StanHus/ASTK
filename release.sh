@@ -12,6 +12,9 @@ if [ ! -f "setup.py" ]; then
     exit 1
 fi
 
+# Get version from setup.py
+VERSION=$(python -c "import re; print(re.search(r'version=[\"\']([^\"\']+)[\"\']', open('setup.py').read()).group(1))")
+
 # Clean previous builds
 echo "🧹 Cleaning previous builds..."
 rm -rf dist/ build/ *.egg-info/
@@ -36,7 +39,7 @@ ls -la dist/
 
 # Verify the package can be imported
 echo "🔍 Testing package import..."
-pip install dist/agent_sprint_testkit-0.1.3-py3-none-any.whl --force-reinstall --quiet
+pip install "dist/agent_sprint_testkit-${VERSION}-py3-none-any.whl" --force-reinstall --quiet
 
 if python -c "import astk; print(f'✅ ASTK version: {astk.__version__}')"; then
     echo "✅ Package import test passed"

@@ -1,5 +1,4 @@
 LICENSE
-README-PACKAGE.md
 README.md
 pyproject.toml
 setup.py
@@ -21,6 +20,7 @@ astk/benchmarks/__init__.py
 astk/benchmarks/metrics.py
 astk/benchmarks/runner.py
 astk/benchmarks/visualization.py
+docs/README-PACKAGE.md
 scripts/__init__.py
 scripts/simple_benchmark.py
 scripts/simple_run.py

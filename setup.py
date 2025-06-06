@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="agent-sprint-testkit",
-    version="0.3.0",
+    version="0.3.1",
     description="AgentSprint TestKit - Professional AI agent evaluation with OpenAI Evals integration",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

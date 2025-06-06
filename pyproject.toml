@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-sprint-testkit"
-version = "0.3.0"
+version = "0.3.1"
 description = "AgentSprint TestKit - Professional AI agent evaluation with OpenAI Evals integration"
 readme = "docs/README-PACKAGE.md"
 license = {file = "LICENSE"}
