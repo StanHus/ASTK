@@ -1,0 +1,23 @@
+task: "file_qna"
+persona:
+  archetype: "impatient_mobile_user"
+  temperature: 0.9
+  traits:
+    - "demanding"
+    - "tech-savvy"
+protocol: "A2A"
+success:
+  regex: "(?i)here's"
+  semantic_score: 0.8
+budgets:
+  latency_ms: 3000
+  cost_usd: 0.1
+  tokens: 1000
+chaos:
+  drop_tool:
+    - "search"
+    - "memory"
+  inject_latency:
+    - 500
+    - 1000
+  malform_messages: true

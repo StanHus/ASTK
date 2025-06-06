@@ -3,19 +3,21 @@
 Benchmark runner script for CI
 """
 
-import asyncio
-import json
-from pathlib import Path
-import sys
-import click
 from datetime import datetime
-
+import click
+import json
+import asyncio
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import ConsoleSpanExporter, BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-
 from astk.benchmarks.runner import BenchmarkRunner
+import sys
+from pathlib import Path
+
+# Add project root to Python path before any astk imports
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 
 def setup_telemetry(otlp_endpoint: str) -> None:

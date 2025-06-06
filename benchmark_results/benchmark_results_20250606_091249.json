@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-06-06T09:12:49.659065",
+  "agent": "examples/agents/file_qa_agent.py",
+  "total_scenarios": 3,
+  "successful_scenarios": 3,
+  "success_rate": 1.0,
+  "total_duration_seconds": 8.392624855041504,
+  "average_scenario_duration": 2.797497351964315,
+  "scenarios": [
+    {
+      "scenario": "file_listing",
+      "duration_seconds": 2.9879801273345947,
+      "success": true,
+      "output": "Agent: The files in the current directory are:\n1. benchmark_results\n2. requirements.txt\n3. CHANGELOG.md\n4. config\n5. pyproject.toml\n6. astk\n7. tests\n8. docs\n9. benchmark_reports\n10. README.md\n11. setup.py\n12. otel-collector-config.yaml\n13. .gitignore\n14. AgentSprint TestKit (ASTK) 1f967e35aea580859158d89bef6a3949.md\n15. .env\n16. examples\n17. .venv\n18. scripts\n19. .github\n20. .venv311\n21. venv\n22. .git\n",
+      "error": null
+    },
+    {
+      "scenario": "directory_exploration",
+      "duration_seconds": 2.269479274749756,
+      "success": true,
+      "output": "Agent: The files in the current directory are:\n1. benchmark_results\n2. requirements.txt\n3. CHANGELOG.md\n4. config\n5. pyproject.toml\n6. astk\n7. tests\n8. docs\n9. benchmark_reports\n10. README.md\n11. setup.py\n12. otel-collector-config.yaml\n13. .gitignore\n14. AgentSprint TestKit (ASTK) 1f967e35aea580859158d89bef6a3949.md\n15. .env\n16. examples\n17. .venv\n18. scripts\n19. .github\n20. .venv311\n21. venv\n22. .git\n",
+      "error": null
+    },
+    {
+      "scenario": "content_analysis",
+      "duration_seconds": 3.1350326538085938,
+      "success": true,
+      "output": "Agent: Files in the current directory:\n1. benchmark_results\n2. requirements.txt\n3. CHANGELOG.md\n4. config\n5. pyproject.toml\n6. astk\n7. tests\n8. docs\n9. benchmark_reports\n10. README.md\n11. setup.py\n12. otel-collector-config.yaml\n13. .gitignore\n14. AgentSprint TestKit (ASTK) 1f967e35aea580859158d89bef6a3949.md\n15. .env\n16. examples\n17. .venv\n18. scripts\n19. .github\n20. .venv311\n21. venv\n22. .git\n",
+      "error": null
+    }
+  ]
+}

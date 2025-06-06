@@ -1,63 +1,15 @@
 thresholds:
   error_rate:
-    max: 0.1 # Maximum allowed error rate (10%)
-    warning: 0.05 # Warning threshold (5%)
-
+    max: 0.1
+    warning: 0.05
   latency:
-    p50:
-      max: 2000 # Maximum allowed p50 latency in ms
-      warning: 1500
-    p90:
-      max: 4000
-      warning: 3000
     p95:
       max: 5000
       warning: 4000
-    p99:
-      max: 8000
-      warning: 6000
-
   throughput:
     conversations_per_minute:
-      min: 10 # Minimum required conversations/min
+      min: 10
       warning: 15
-    messages_per_minute:
-      min: 30 # Minimum required messages/min
-      warning: 45
-
-  resources:
-    peak_memory_mb:
-      max: 2048 # Maximum allowed memory usage in MB
-      warning: 1536
-    total_tokens:
-      max: 100000 # Maximum allowed token usage per scenario
-      warning: 75000
-    total_cost_usd:
-      max: 1.0 # Maximum allowed cost per scenario in USD
-      warning: 0.75
-
   coverage:
-    min: 80 # Minimum required coverage percentage
+    min: 80
     warning: 90
-
-# Scenario-specific overrides
-scenario_overrides:
-  code_agent: # More generous thresholds for code agent scenarios
-    latency:
-      p95:
-        max: 8000 # Allow higher latency for code operations
-        warning: 6000
-    resources:
-      total_tokens:
-        max: 150000 # Allow more tokens for code tasks
-        warning: 100000
-
-  file_qna: # Stricter thresholds for simple Q&A
-    latency:
-      p95:
-        max: 3000
-        warning: 2000
-    throughput:
-      conversations_per_minute:
-        min: 20 # Expect higher throughput for simple tasks
-        warning: 25

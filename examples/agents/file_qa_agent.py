@@ -6,7 +6,7 @@ Simple File Q&A Agent using LangChain
 import os
 import sys
 from typing import List, Optional
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.agents import tool
@@ -15,7 +15,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 
 
 class FileQAAgent:
