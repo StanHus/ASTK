@@ -80,7 +80,7 @@ if __name__ == "__main__":
         print()
         print("Next steps:")
         print("1. Verify PyPI upload completed")
-        print("2. Test: pip install astk (in fresh environment)")
+        print("2. Test: pip install agent-sprint-testkit (in fresh environment)")
         print("3. Test: astk --help")
         print("4. Test: astk init test-project")
     else:

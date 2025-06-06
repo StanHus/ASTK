@@ -19,7 +19,7 @@ python -m twine upload dist/*
 
 ```bash
 # Anyone can install ASTK
-pip install astk
+pip install agent-sprint-testkit
 
 # Initialize new agent project
 astk init my-agent-project
@@ -36,7 +36,7 @@ astk report
 
 ```bash
 # Add to requirements.txt
-echo "astk>=0.1.0" >> requirements.txt
+echo "agent-sprint-testkit>=0.1.0" >> requirements.txt
 
 # Benchmark existing agents
 astk benchmark ./my_existing_agent.py
@@ -47,7 +47,7 @@ astk benchmark ./my_existing_agent.py
 ```yaml
 # .github/workflows/test.yml
 - name: Install ASTK
-  run: pip install astk
+  run: pip install agent-sprint-testkit
 
 - name: Benchmark Agent
   run: astk benchmark agents/my_agent.py
@@ -191,9 +191,15 @@ astk benchmark examples/agents/file_qa_agent.py
 
 ```bash
 # Add to README.md
-pip install astk
+pip install agent-sprint-testkit
 astk init my-project
 astk benchmark my_agent.py
 ```
 
-**🎯 Result: Anyone can `pip install astk` and start benchmarking their agents in 2 minutes!**
+**🎯 Result: Anyone can `pip install agent-sprint-testkit` and start benchmarking their agents in 2 minutes!**
+
+### 3. **Testing the Package** ✅
+
+```bash
+pip install agent-sprint-testkit
+```

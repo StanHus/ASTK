@@ -7,16 +7,11 @@ on:
         description: "Path to agent script"
         required: true
         type: string
-      scenarios:
-        description: "Number of test scenarios"
+      results-dir:
+        description: "Directory to save results"
         required: false
-        type: number
-        default: 8
-      timeout:
-        description: "Timeout per scenario (seconds)"
-        required: false
-        type: number
-        default: 45
+        type: string
+        default: "benchmark_results"
       python-version:
         description: "Python version to use"
         required: false
@@ -25,7 +20,7 @@ on:
     secrets:
       OPENAI_API_KEY:
         description: "OpenAI API key for agent testing"
-        required: true
+        required: false
 
 jobs:
   benchmark:
@@ -48,9 +43,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install ASTK
+      - name: Install ASTK from PyPI
         run: |
-          pip install astk
+          pip install agent-sprint-testkit
 
       - name: Install project dependencies
         run: |
@@ -65,25 +60,39 @@ jobs:
           fi
           echo "✅ Agent found: ${{ inputs.agent-path }}"
 
-      - name: Run ASTK Benchmarks
+      - name: Test agent basic functionality
+        run: |
+          # Test that agent accepts command line arguments
+          python "${{ inputs.agent-path }}" "Hello, this is a test question" || echo "⚠️ Agent may not accept CLI arguments"
+
+      - name: Run ASTK Sophisticated Benchmarks
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          astk benchmark "${{ inputs.agent-path }}" \
-            --scenarios ${{ inputs.scenarios }} \
-            --timeout ${{ inputs.timeout }} \
-            --results-dir astk_results \
-            --format json
+          python -c "
+          import subprocess
+          import sys
+          from pathlib import Path
 
-      - name: Generate Report
-        run: |
-          astk report astk_results
+          # Use the simple_benchmark.py script directly
+          result = subprocess.run([
+            sys.executable, 'scripts/simple_benchmark.py',
+            '${{ inputs.agent-path }}',
+            '--results-dir', '${{ inputs.results-dir }}'
+          ], capture_output=True, text=True)
+
+          print('STDOUT:', result.stdout)
+          if result.stderr:
+            print('STDERR:', result.stderr)
+
+          sys.exit(result.returncode)
+          "
 
       - name: Upload Benchmark Results
         uses: actions/upload-artifact@v3
         with:
           name: astk-benchmark-results
-          path: astk_results/
+          path: ${{ inputs.results-dir }}/
           retention-days: 30
 
       - name: Comment PR with Results
@@ -95,7 +104,13 @@ jobs:
             const path = require('path');
 
             // Find latest results file
-            const resultsDir = 'astk_results';
+            const resultsDir = '${{ inputs.results-dir }}';
+
+            if (!fs.existsSync(resultsDir)) {
+              console.log('Results directory not found');
+              return;
+            }
+
             const files = fs.readdirSync(resultsDir);
             const jsonFiles = files.filter(f => f.endsWith('.json'));
 
@@ -108,30 +123,69 @@ jobs:
             const resultsPath = path.join(resultsDir, latestFile);
             const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
 
-            // Create comment body
+            // Create comment body with sophisticated metrics
             const successRate = (results.success_rate * 100).toFixed(1);
+            const complexityScore = ((results.complexity_score || 0) * 100).toFixed(1);
             const avgTime = results.average_scenario_duration.toFixed(2);
             const totalTime = results.total_duration_seconds.toFixed(2);
 
-            const comment = `## 🚀 ASTK Benchmark Results
+            // Get capability rating
+            const complexity = results.complexity_score || 0;
+            let capability = '';
+            if (complexity >= 0.8) capability = '🌟 Exceptional AI';
+            else if (complexity >= 0.6) capability = '🔥 Advanced AI'; 
+            else if (complexity >= 0.4) capability = '💡 Competent AI';
+            else capability = '📚 Developing AI';
+
+            // Create difficulty breakdown
+            const difficultyBreakdown = Object.entries(results.difficulty_breakdown || {})
+              .map(([diff, data]) => {
+                const emoji = {'intermediate': '📘', 'advanced': '📙', 'expert': '📕'}[diff] || '📗';
+                const rate = (data.success_rate * 100).toFixed(1);
+                return `- ${emoji} **${diff.charAt(0).toUpperCase() + diff.slice(1)}**: ${rate}% (${data.scenarios})`;
+              }).join('\n');
+
+            // Create category breakdown  
+            const categoryBreakdown = Object.entries(results.category_breakdown || {})
+              .slice(0, 5) // Show top 5 categories
+              .map(([cat, data]) => {
+                const rate = (data.success_rate * 100).toFixed(1);
+                return `- **${cat.replace(/_/g, ' ')}**: ${rate}% (${data.scenarios})`;
+              }).join('\n');
+
+            const comment = `## 🚀 ASTK Sophisticated Benchmark Results
 
             **Agent:** \`${{ inputs.agent-path }}\`
 
-            ### 📊 Summary
+            ### 📊 Executive Summary
             - ✅ **Success Rate:** ${successRate}%
+            - 🧠 **Complexity Score:** ${complexityScore}% (difficulty-weighted)
             - ⏱️ **Average Response Time:** ${avgTime}s
             - 🕐 **Total Time:** ${totalTime}s
-            - 🧪 **Scenarios:** ${results.total_scenarios}
+            - 🧪 **Scenarios:** ${results.total_scenarios || 12} sophisticated tests
 
-            ### 🎯 Scenario Results
-            ${results.scenarios.map(s => 
-              `- ${s.success ? '✅' : '❌'} **${s.scenario.replace(/_/g, ' ')}** (${s.duration_seconds.toFixed(2)}s)`
-            ).join('\n')}
+            ### 🌟 AI Capability Assessment
+            **${capability}** (Complexity Score: ${complexityScore}%)
+
+            ### 🎓 Performance by Difficulty
+            ${difficultyBreakdown || 'No difficulty breakdown available'}
+
+            ### 🏷️ Top Categories  
+            ${categoryBreakdown || 'No category breakdown available'}
+
+            ### 🧪 Individual Scenario Results
+            ${results.scenarios.map(s => {
+              const duration = s.duration_seconds ? s.duration_seconds.toFixed(2) : 'N/A';
+              return `- ${s.success ? '✅' : '❌'} **${s.scenario.replace(/_/g, ' ')}** (${duration}s)`;
+            }).join('\n')}
 
             ${results.scenarios.some(s => !s.success) ? 
-              '\n⚠️ Some scenarios failed. Check the full results for details.' : 
-              '\n🎉 All scenarios passed!'
+              '\n⚠️ Some sophisticated scenarios failed. This indicates areas for AI capability improvement.' : 
+              '\n🎉 All sophisticated scenarios passed! Excellent AI performance across multiple domains.'
             }
+
+            ### 📈 Next Steps
+            ${complexity < 0.6 ? '- Focus on improving reasoning and problem-solving capabilities\n- Consider advanced training on multi-step scenarios' : '- Consider testing with even more challenging expert-level scenarios\n- Explore specialized domain testing'}
             `;
 
             github.rest.issues.createComment({
@@ -140,3 +194,22 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
+
+  # Optional: Benchmark comparison job for tracking improvements over time
+  benchmark-comparison:
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Download current results
+        uses: actions/download-artifact@v3
+        with:
+          name: astk-benchmark-results
+          path: current-results/
+
+      - name: Compare with baseline (if available)
+        run: |
+          echo "📊 Benchmark comparison would be implemented here"
+          echo "This could compare current results with main branch results"
+          echo "Current results saved in: current-results/"

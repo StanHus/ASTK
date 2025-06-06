@@ -19,6 +19,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.1.2] - 2024-01-XX
+
+### ✨ Enhanced GitHub Actions & CLI
+
+- **Streamlined CI/CD**: Simplified GitHub Actions workflows for better reliability
+- **Updated CI Workflow**: Focus on package testing across Python 3.9-3.12 and multiple OS
+- **Improved ASTK Template**: Updated reusable workflow with sophisticated metrics and reporting
+- **CLI Redesign**: Main `astk` command now uses the sophisticated benchmark runner with 12 scenarios
+- **Package Entry Points**: Fixed console scripts to use working `simple_benchmark.py` and `simple_run.py`
+- **Documentation Updates**: All references updated from `pip install astk` to `pip install agent-sprint-testkit`
+
+### 🔧 Technical Improvements
+
+- **Module Structure**: Added proper `__init__.py` to scripts directory for package imports
+- **Cross-Platform Testing**: CI now tests on Ubuntu and macOS with multiple Python versions
+- **Simplified Workflows**: Removed complex OpenTelemetry and benchmarking infrastructure in favor of working solutions
+
+### 📚 Documentation
+
+- **Workflow Documentation**: Updated all GitHub Actions to match current package structure
+- **Package References**: Fixed all documentation to use correct PyPI package name
+- **CLI Examples**: Updated help text and examples to match current functionality
+
 ## [0.1.1] - 2024-01-XX
 
 ### Added

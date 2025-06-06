@@ -318,14 +318,15 @@ async def run_benchmark(agent_path: Path, results_dir: Path) -> None:
         print(f"\n📚 DEVELOPING AI: Focus on improving reasoning and problem-solving capabilities.")
 
 
-if __name__ == "__main__":
+def main():
+    """Main entry point for console script"""
     parser = argparse.ArgumentParser(
         description="ASTK Sophisticated AI Benchmark Runner - Test AI agents with advanced reasoning scenarios",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
-    ./scripts/simple_benchmark.py examples/agents/file_qa_agent.py
+    astk examples/agents/file_qa_agent.py
+    astk-benchmark examples/agents/file_qa_agent.py
     
 The benchmark runs 12 sophisticated scenarios across multiple categories:
 
@@ -379,3 +380,7 @@ Results are saved to benchmark_results/ directory.
     print()
 
     asyncio.run(run_benchmark(agent_path, results_dir))
+
+
+if __name__ == "__main__":
+    main()

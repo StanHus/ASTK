@@ -10,6 +10,7 @@ import subprocess
 import shutil
 from pathlib import Path
 from typing import Optional
+import webbrowser
 
 
 @click.group()
@@ -198,7 +199,7 @@ jobs:
     
     - name: Install ASTK
       run: |
-        pip install astk
+        pip install agent-sprint-testkit
     
     - name: Run Agent Benchmarks
       env:
@@ -225,7 +226,6 @@ jobs:
 def generate_html_report(result_file: Path):
     """Generate HTML report from JSON results"""
     import json
-    import webbrowser
 
     with open(result_file) as f:
         data = json.load(f)
@@ -281,6 +281,69 @@ def generate_html_report(result_file: Path):
 
     click.echo(f"📊 Report generated: {report_file}")
     webbrowser.open(f"file://{report_file.absolute()}")
+
+
+def main_wrapper():
+    """Wrapper to call the sophisticated benchmark script"""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    # Check if we should show help
+    if len(sys.argv) == 1 or '--help' in sys.argv or '-h' in sys.argv:
+        print("🚀 ASTK - AgentSprint TestKit")
+        print("Sophisticated AI Agent Benchmarking")
+        print()
+        print("Usage:")
+        print("  astk <agent_path>              - Run sophisticated benchmark")
+        print("  astk-benchmark <agent_path>    - Same as above")
+        print("  astk-run <agent_path>          - Run agent directly")
+        print()
+        print("Examples:")
+        print("  astk examples/agents/file_qa_agent.py")
+        print("  astk-benchmark my_agent.py --results-dir results/")
+        print()
+        print("Features:")
+        print("  📊 12 sophisticated scenarios across multiple categories")
+        print("  🧠 Advanced reasoning and problem-solving tests")
+        print("  🎯 Complexity scoring with difficulty weighting")
+        print("  📈 Category performance breakdown")
+        print("  🌟 AI capability assessment")
+        print()
+        return
+
+    # Find the script path relative to the package
+    script_path = Path(__file__).parent.parent / \
+        "scripts" / "simple_benchmark.py"
+
+    # Call the sophisticated benchmark script
+    try:
+        subprocess.run([sys.executable, str(script_path)] +
+                       sys.argv[1:], check=True)
+    except subprocess.CalledProcessError as e:
+        sys.exit(e.returncode)
+
+
+def benchmark_wrapper():
+    """Wrapper for astk-benchmark command"""
+    main_wrapper()
+
+
+def run_wrapper():
+    """Wrapper to call the simple run script"""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    # Find the script path relative to the package
+    script_path = Path(__file__).parent.parent / "scripts" / "simple_run.py"
+
+    # Call the simple run script
+    try:
+        subprocess.run([sys.executable, str(script_path)] +
+                       sys.argv[1:], check=True)
+    except subprocess.CalledProcessError as e:
+        sys.exit(e.returncode)
 
 
 if __name__ == "__main__":

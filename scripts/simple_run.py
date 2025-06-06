@@ -44,9 +44,11 @@ async def run_agent(agent_path: Path) -> None:
         print(f"Error running agent: {e}")
 
 
-if __name__ == "__main__":
+def main():
+    """Main entry point for console script"""
     if len(sys.argv) < 2:
-        print("Usage: python scripts/simple_run.py <agent_path>")
+        print("Usage: astk-run <agent_path>")
+        print("Example: astk-run examples/agents/file_qa_agent.py")
         sys.exit(1)
 
     agent_path = Path(sys.argv[1])
@@ -55,3 +57,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     asyncio.run(run_agent(agent_path))
+
+
+if __name__ == "__main__":
+    main()

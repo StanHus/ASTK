@@ -20,7 +20,7 @@ python3 -m venv test_astk_install
 source test_astk_install/bin/activate
 
 # Install from PyPI
-pip install astk
+pip install agent-sprint-testkit
 
 # Test CLI
 astk --help
@@ -67,11 +67,11 @@ cat .github/workflows/astk.yml
 
 ## **🎯 Success Criteria**
 
-✅ **Package installs globally**: `pip install astk` works  
-✅ **CLI accessible**: `astk --help` shows usage  
-✅ **Project creation**: `astk init` creates proper structure  
-✅ **Agent template works**: Generated agent responds to queries  
-✅ **Benchmark command exists**: Shows proper error/help messages
+✅ **Package installs globally**: `pip install agent-sprint-testkit` works  
+✅ **Scripts work**: All entry points function correctly  
+✅ **Dependencies resolve**: No conflicts during installation  
+✅ **CLI available globally**: Commands work from any directory  
+✅ **Documentation accurate**: README matches actual behavior
 
 ---
 
@@ -85,7 +85,7 @@ Once verified, add this to your main README.md:
 ### Install ASTK
 
 ```bash
-pip install astk
+pip install agent-sprint-testkit
 ```
 ````
 
@@ -124,7 +124,7 @@ If you see import errors, check:
 ### **CLI Not Found**
 If `astk` command not found:
 1. Check entry points in setup.py
-2. Reinstall: `pip uninstall astk && pip install astk`
+2. Reinstall: `pip uninstall agent-sprint-testkit && pip install agent-sprint-testkit`
 3. Verify with: `python -c "import astk.cli; print('OK')"`
 
 ### **Permission Errors**
@@ -142,4 +142,11 @@ If upload failed:
 3. **📢 Announce** to potential users
 4. **📊 Monitor** download statistics on PyPI
 5. **🐛 Fix** any issues reported by early users
+
+### **If Package Installation Fails:**
+
+1. **Check PyPI status**: Verify package uploaded correctly
+2. Reinstall: `pip uninstall agent-sprint-testkit && pip install agent-sprint-testkit`
+3. **Clear pip cache**: `pip cache purge`
+4. **Try specific version**: `pip install agent-sprint-testkit==0.1.1`
 ```

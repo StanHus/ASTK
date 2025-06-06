@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name="agent-sprint-testkit",
-    version="0.1.1",
+    version="0.1.2",
     description="AgentSprint TestKit - Benchmark your AI agents",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="ASTK Team",
-    author_email="team@astk.dev",
-    url="https://github.com/your-org/astk",
+    author_email="stan@blackbox-dev.com",
+    url="https://github.com/stanhus/ASTK",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -49,8 +49,9 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "astk=astk.cli:cli",
-            "astk-benchmark=scripts.simple_benchmark:main",
+            "astk=astk.cli:main_wrapper",
+            "astk-benchmark=astk.cli:benchmark_wrapper",
+            "astk-run=astk.cli:run_wrapper",
         ],
     },
     include_package_data=True,
