@@ -1,0 +1,76 @@
+{
+  "timestamp": "2025-06-06T09:59:52.269039",
+  "agent": "examples/agents/file_qa_agent.py",
+  "total_scenarios": 8,
+  "successful_scenarios": 8,
+  "success_rate": 1.0,
+  "total_duration_seconds": 51.96150231361389,
+  "average_scenario_duration": 6.495134860277176,
+  "average_response_length": 896.25,
+  "scenarios": [
+    {
+      "scenario": "file_discovery",
+      "query": "Find all Python files in the project and tell me what the main entry points are.",
+      "duration_seconds": 5.163684844970703,
+      "success": true,
+      "output": "Agent: The main entry points in the Python files are as follows:\n\n1. **test_setup.py**:\n   - The main entry point is the `main()` function, which runs all tests including testing Python version, dependencies, OpenAI API key, file structure, and the example agent.\n\n2. **test_package.py**:\n   - The main entry point is the `__main__` block, which tests the package structure and imports.\n\n3. **setup.py**:\n   - The main entry points are defined in the `entry_points` section under the `console_scripts` key:\n     - `astk=astk.cli:cli`\n     - `astk-benchmark=scripts.simple_benchmark:main`\n\nThese are the main entry points in the Python files found in the project.\n",
+      "error": null
+    },
+    {
+      "scenario": "config_analysis",
+      "query": "Look for configuration files (like .yaml, .json, .toml) and summarize what they configure.",
+      "duration_seconds": 11.710446834564209,
+      "success": true,
+      "output": "Agent: I found another configuration file:\n\n3. **benchmark_thresholds.yaml**:\n   - Configures thresholds for error rate, latency (p95), throughput (conversations per minute), and coverage. Here are the thresholds specified:\n     - **Error Rate**:\n       - Max: 0.1\n       - Warning: 0.05\n     - **Latency**:\n       - P95:\n         - Max: 5000\n         - Warning: 4000\n     - **Throughput**:\n       - Conversations per minute:\n         - Min: 10\n         - Warning: 15\n     - **Coverage**:\n       - Min: 80\n       - Warning: 90\n\nThese are the configurations found in the specified configuration files.\n",
+      "error": null
+    },
+    {
+      "scenario": "readme_comprehension",
+      "query": "Read the README.md file and explain what this project does and how to use it.",
+      "duration_seconds": 5.038702964782715,
+      "success": true,
+      "output": "Agent: This project is AgentSprint TestKit (ASTK), a universal AI agent benchmarking and testing framework. It allows you to evaluate the performance, intelligence, and capabilities of AI agents through diverse scenarios such as file analysis, code comprehension, and complex reasoning.\n\n### How to Use:\n1. **Installation**:\n   - Install from PyPI:\n     ```bash\n     pip install agent-sprint-testkit\n     ```\n   \n2. **Verify Installation**:\n   ```bash\n   astk --help\n   ```\n\n3. **Set API Key**:\n   ```bash\n   export OPENAI_API_KEY=\"your-api-key-here\"\n   ```\n\n4. **Initialize a Project**:\n   ```bash\n   astk init my-agent-tests\n   cd my-agent-tests\n   ```\n\n5. **Run Your First Benchmark**:\n   - Benchmark an example agent:\n     ```bash\n     astk benchmark examples/agents/file_qa_agent.py\n     ```\n   - Or run directly from your project:\n     ```bash\n     python scripts/simple_benchmark.py examples/agents/file_qa_agent.py\n     ```\n\n### Available Tools:\n- **ASTK CLI (Primary Interface)**:\n  - Initialize project, run benchmarks, generate reports, view usage examples.\n- **Legacy Script Runners**:\n  - Direct benchmark execution, basic agent runner.\n\n### Project Structure:\nThe project structure includes directories for examples, scripts, core framework, benchmark results, configuration files, and documentation.\n\n### Performance Tips:\n- Use GPT-3.5-turbo for faster responses.\n- Use GPT-4 for better intelligence in complex reasoning tasks.\n- Monitor token usage in results for cost optimization.\n\n### Contributing:\n1. Create new agents in `examples/agents/`.\n2. Add benchmark scenarios in `scripts/simple_benchmark.py`.\n3. Test with: `python scripts/simple_benchmark.py your_agent.py`.\n\n### License:\nApache 2.0 License - See LICENSE file for details.\n\nTo get started with benchmarking your AI agents, follow these commands:\n```bash\npip install agent-sprint-testkit\nastk benchmark examples/agents/file_qa_agent.py\n```\n\nFor a quick start, use these commands:\n```bash\npip install agent-sprint-testkit\nastk init my-tests\nastk examples\n```\n",
+      "error": null
+    },
+    {
+      "scenario": "code_structure",
+      "query": "Analyze the astk directory structure and explain the main components of this codebase.",
+      "duration_seconds": 4.164855003356934,
+      "success": true,
+      "output": "Agent: The astk directory contains the following files and subdirectories:\n\n1. `metrics.py`: This file likely contains code related to calculating and managing metrics in the codebase.\n2. `runner.py`: This file may be responsible for running processes or tasks within the codebase.\n3. `chaos.py`: This file could be related to chaos engineering or introducing controlled disruptions in the system for testing purposes.\n4. `__init__.py`: This is a special Python file that indicates that the directory should be considered a package.\n5. `persona.py`: This file may handle functionality related to user personas or profiles.\n6. `__pycache__`: This is a directory created by Python to store compiled bytecode files for faster execution.\n7. `cli.py`: This file might contain code for the command-line interface of the codebase.\n8. `benchmarks`: This directory likely contains benchmarking-related code or scripts.\n9. `schema.py`: This file may define the schema or structure of data used within the codebase.\n\nThe main components of this codebase are likely related to metrics calculation, process running, chaos engineering, user personas, command-line interface, benchmarks, and data schema definition.\n",
+      "error": null
+    },
+    {
+      "scenario": "documentation_search",
+      "query": "Look in the docs folder and summarize what documentation is available.",
+      "duration_seconds": 11.223797082901001,
+      "success": true,
+      "output": "Agent: The documentation available in the \"docs\" folder consists of an Architecture Decision Record (ADR) template file named \"template.md\". The template includes sections for recording the status, context, decision, consequences, implementation notes, and related information for architectural decisions. If you need more specific details or information from this template, please let me know.\n",
+      "error": null
+    },
+    {
+      "scenario": "dependency_analysis",
+      "query": "Find and analyze the requirements.txt or setup.py file to list the main dependencies.",
+      "duration_seconds": 4.124645709991455,
+      "success": true,
+      "output": "Agent: The main dependencies listed in the files are as follows:\n\n- **requirements.txt**:\n    - langchain>=0.1.0\n    - langchain-openai>=0.0.2\n    - langchain-core>=0.1.0\n    - pydantic>=2.0.0\n    - click>=8.0.0\n    - opentelemetry-api>=1.20.0\n    - opentelemetry-sdk>=1.20.0\n    - psutil>=5.9.0\n    - python-dotenv>=1.0.0\n\n- **setup.py**:\n    - langchain>=0.1.0\n    - langchain-openai>=0.0.2\n    - langchain-core>=0.1.0\n    - pydantic>=2.0.0\n    - click>=8.0.0\n    - opentelemetry-api>=1.20.0\n    - opentelemetry-sdk>=1.20.0\n    - psutil>=5.9.0\n    - python-dotenv>=1.0.0\n    - requests>=2.28.0\n    - aiohttp>=3.8.0\n\nThese are the main dependencies required by the project.\n",
+      "error": null
+    },
+    {
+      "scenario": "example_exploration",
+      "query": "Explore the examples directory and describe what example code is available.",
+      "duration_seconds": 4.356306314468384,
+      "success": true,
+      "output": "Agent: The example code available in the \"examples\" directory includes a file named \"file_qa_agent.py\". This file contains code for a \"File Q&A Agent\" that can answer questions about files in a directory. The agent uses LangChain and OpenAI model for responding to queries about files. The code includes functions to read the contents of a file and list files in a specified directory.\n\nThe \"file_qa_agent.py\" script defines a class called \"FileQAAgent\" that initializes the agent with an OpenAI model, creates tools for reading files and listing files, and processes chat messages to provide responses about files. The script also includes examples of interactions with the agent, such as querying the files in a directory and summarizing the contents of a specific file.\n\nIf you have any specific questions or need more details about the code, feel free to ask!\n",
+      "error": null
+    },
+    {
+      "scenario": "test_discovery",
+      "query": "Look for test files and describe what testing framework and test cases exist.",
+      "duration_seconds": 6.178640127182007,
+      "success": true,
+      "output": "Agent: I found the following test files:\n\n1. **test_setup.py**:\n   - **Testing Framework**: Custom Python script for ASTK Setup Test.\n   - **Test Cases**:\n     - Test Python version\n     - Test required dependencies\n     - Test OpenAI API key\n     - Test file structure\n     - Test the example agent\n\n2. **test_package.py**:\n   - **Testing Framework**: Custom Python script for verifying ASTK package functionality.\n   - **Test Cases**:\n     - Test that all modules can be imported\n     - Test package structure\n\n3. **tests** (Directory):\n   - **Unable to Read**: The contents of the \"tests\" directory could not be read.\n\nThese files contain test scripts written in Python for testing the ASTK Setup and ASTK package functionality.\n",
+      "error": null
+    }
+  ]
+}
