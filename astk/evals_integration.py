@@ -1,6 +1,6 @@
 """
 OpenAI Evals API integration for ASTK
-Prototype implementation for v0.2.0
+Enhanced implementation for v0.2.0 with multi-layer evaluation support
 """
 
 import os
@@ -16,8 +16,48 @@ except ImportError:
 from .schema import ScenarioConfig, SuccessCriteria
 
 
+class MultiLayerEvaluationResult:
+    """Results from multi-layer OpenAI evaluation"""
+
+    def __init__(self):
+        self.layer_results = {}
+        self.overall_score = 0.0
+        self.passed = False
+        self.detailed_feedback = {}
+        self.evaluation_metadata = {}
+
+    def add_layer_result(self, layer_name: str, score: float, feedback: str, evaluator: str):
+        """Add result from a specific evaluation layer"""
+        self.layer_results[layer_name] = {
+            "score": score,
+            "feedback": feedback,
+            "evaluator": evaluator,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    def calculate_overall_score(self, weights: Optional[Dict[str, float]] = None):
+        """Calculate weighted overall score from all layers"""
+        if not self.layer_results:
+            return 0.0
+
+        if weights is None:
+            # Equal weighting if no weights provided
+            weights = {layer: 1.0 for layer in self.layer_results.keys()}
+
+        total_score = 0.0
+        total_weight = 0.0
+
+        for layer, result in self.layer_results.items():
+            weight = weights.get(layer, 1.0)
+            total_score += result["score"] * weight
+            total_weight += weight
+
+        self.overall_score = total_score / total_weight if total_weight > 0 else 0.0
+        return self.overall_score
+
+
 class OpenAIEvalsAdapter:
-    """Adapter for integrating ASTK with OpenAI's Evals API"""
+    """Enhanced adapter for integrating ASTK with OpenAI's Evals API"""
 
     def __init__(self, api_key: Optional[str] = None):
         if openai is None:
@@ -27,44 +67,400 @@ class OpenAIEvalsAdapter:
         self.client = openai.OpenAI(
             api_key=api_key or os.getenv("OPENAI_API_KEY"))
         self.grader_prompts = GRADER_PROMPTS
+        self.evaluation_cache = {}
+
+    def evaluate_response_multilayer(
+        self,
+        response: str,
+        scenario_config: ScenarioConfig,
+        context: Optional[Dict[str, Any]] = None
+    ) -> MultiLayerEvaluationResult:
+        """
+        Perform multi-layer evaluation of a response using multiple OpenAI evaluators
+
+        Args:
+            response: The agent response to evaluate
+            scenario_config: The scenario configuration containing evaluation criteria
+            context: Additional context for evaluation
+
+        Returns:
+            MultiLayerEvaluationResult with comprehensive evaluation
+        """
+        result = MultiLayerEvaluationResult()
+
+        # Layer 1: Basic validation (regex, semantic)
+        basic_score = self._evaluate_basic_criteria(
+            response, scenario_config.success)
+        result.add_layer_result("basic_validation", basic_score,
+                                "Basic regex and semantic validation", "astk_basic")
+
+        # Layer 2: OpenAI multi-evaluator assessment
+        if hasattr(scenario_config.success, 'openai_evaluations'):
+            for eval_config in scenario_config.success.openai_evaluations:
+                evaluator_name = eval_config.evaluator
+                prompt = eval_config.prompt
+                pass_threshold = eval_config.pass_threshold
+
+                # Perform OpenAI evaluation
+                eval_score, eval_feedback = self._perform_openai_evaluation(
+                    response, prompt, evaluator_name, scenario_config, context
+                )
+
+                layer_name = f"openai_{evaluator_name}_{len(result.layer_results)}"
+                result.add_layer_result(
+                    layer_name, eval_score, eval_feedback, evaluator_name)
+
+                # Track pass/fail for each layer
+                result.evaluation_metadata[layer_name] = {
+                    "passed": eval_score >= pass_threshold,
+                    "threshold": pass_threshold,
+                    "evaluator_model": evaluator_name
+                }
+
+        # Calculate overall score and determine pass/fail
+        result.calculate_overall_score()
+
+        # Determine overall pass status (all critical layers must pass)
+        result.passed = self._determine_overall_pass_status(
+            result, scenario_config)
+
+        return result
+
+    def _perform_openai_evaluation(
+        self,
+        response: str,
+        evaluation_prompt: str,
+        evaluator_model: str,
+        scenario_config: ScenarioConfig,
+        context: Optional[Dict[str, Any]] = None
+    ) -> tuple[float, str]:
+        """
+        Perform a single OpenAI evaluation
+
+        Returns:
+            Tuple of (score, detailed_feedback)
+        """
+
+        # Construct the full evaluation prompt
+        full_prompt = f"""
+{evaluation_prompt}
+
+SCENARIO CONTEXT:
+- Task: {scenario_config.task}
+- Difficulty: {getattr(scenario_config, 'difficulty', 'unknown')}
+- Category: {getattr(scenario_config, 'category', 'general')}
+
+AGENT RESPONSE TO EVALUATE:
+{response}
+
+Please provide your evaluation as JSON in the following format:
+{{
+    "overall_score": <score_1_to_10>,
+    "dimension_scores": {{
+        "dimension_1": <score>,
+        "dimension_2": <score>,
+        ...
+    }},
+    "detailed_feedback": "<comprehensive_explanation>",
+    "strengths": ["<strength_1>", "<strength_2>", ...],
+    "weaknesses": ["<weakness_1>", "<weakness_2>", ...],
+    "recommendations": ["<rec_1>", "<rec_2>", ...]
+}}
+"""
+
+        try:
+            # Make the OpenAI API call
+            response_obj = self.client.chat.completions.create(
+                model=evaluator_model,
+                messages=[
+                    {"role": "system", "content": "You are an expert evaluator providing detailed, objective assessment of AI responses."},
+                    {"role": "user", "content": full_prompt}
+                ],
+                temperature=0.1,  # Low temperature for consistent evaluation
+                max_tokens=2000
+            )
+
+            evaluation_text = response_obj.choices[0].message.content
+
+            # Try to parse JSON response
+            try:
+                evaluation_data = json.loads(evaluation_text)
+                score = float(evaluation_data.get("overall_score", 0))
+                feedback = evaluation_data.get(
+                    "detailed_feedback", evaluation_text)
+
+                # Store complete evaluation data
+                complete_feedback = {
+                    "score": score,
+                    "dimension_scores": evaluation_data.get("dimension_scores", {}),
+                    "detailed_feedback": feedback,
+                    "strengths": evaluation_data.get("strengths", []),
+                    "weaknesses": evaluation_data.get("weaknesses", []),
+                    "recommendations": evaluation_data.get("recommendations", []),
+                    "raw_response": evaluation_text
+                }
+
+                return score, json.dumps(complete_feedback, indent=2)
+
+            except json.JSONDecodeError:
+                # Fallback: Extract numerical score from text
+                score = self._extract_score_from_text(evaluation_text)
+                return score, evaluation_text
+
+        except Exception as e:
+            return 0.0, f"Evaluation failed: {str(e)}"
+
+    def _extract_score_from_text(self, text: str) -> float:
+        """Extract numerical score from evaluation text as fallback"""
+        import re
+
+        # Look for patterns like "score: 8.5" or "8.5/10" or "rating of 7"
+        patterns = [
+            r'score[:\s]+(\d+\.?\d*)',
+            r'(\d+\.?\d*)[/\s]*(?:out of\s*)?10',
+            r'rating[:\s]+(\d+\.?\d*)',
+            r'(\d+\.?\d*)[/\s]*10'
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, text.lower())
+            if match:
+                try:
+                    score = float(match.group(1))
+                    return min(max(score, 0), 10)  # Clamp to 0-10 range
+                except ValueError:
+                    continue
+
+        return 5.0  # Default middle score if extraction fails
+
+    def _evaluate_basic_criteria(self, response: str, success_criteria: SuccessCriteria) -> float:
+        """Evaluate basic regex and semantic criteria"""
+        import re
+
+        score = 0.0
+        criteria_count = 0
+
+        # Regex validation
+        if success_criteria.regex:
+            criteria_count += 1
+            if re.search(success_criteria.regex, response, re.IGNORECASE):
+                score += 10.0
+
+        # Semantic score validation (placeholder - would use actual semantic similarity)
+        if success_criteria.semantic_score is not None:
+            criteria_count += 1
+            # TODO: Implement actual semantic similarity scoring
+            # For now, assume high semantic similarity if response is substantial
+            if len(response.strip()) > 100:
+                score += 8.0  # Placeholder semantic score
+            else:
+                score += 4.0
+
+        return score / criteria_count if criteria_count > 0 else 5.0
+
+    def _determine_overall_pass_status(
+        self,
+        result: MultiLayerEvaluationResult,
+        scenario_config: ScenarioConfig
+    ) -> bool:
+        """Determine if the evaluation passes based on all layer requirements"""
+
+        # Basic validation must pass
+        basic_score = result.layer_results.get(
+            "basic_validation", {}).get("score", 0)
+        if basic_score < 6.0:  # Basic threshold
+            return False
+
+        # All OpenAI evaluations must meet their thresholds
+        for layer_name, metadata in result.evaluation_metadata.items():
+            if not metadata.get("passed", False):
+                return False
+
+        # Overall score threshold
+        if result.overall_score < 7.0:  # Global minimum
+            return False
+
+        return True
 
     def create_eval_from_scenarios(
         self,
         scenarios: List[ScenarioConfig],
-        eval_name: str = "ASTK Agent Evaluation",
+        eval_name: str = "ASTK Multi-Layer Agent Evaluation",
         grader_model: str = "gpt-4"
     ) -> str:
         """
-        Create an OpenAI Eval from ASTK scenarios
+        Create an OpenAI Eval from ASTK scenarios with multi-layer support
 
         Args:
             scenarios: List of ASTK scenario configurations
             eval_name: Name for the evaluation
-            grader_model: Model to use for grading (gpt-4, o3, etc.)
+            grader_model: Primary model to use for grading
 
         Returns:
             Evaluation ID
         """
-        # Determine the appropriate grader prompt based on scenarios
-        grader_prompt = self._select_grader_prompt(scenarios)
+        # Enhanced grader prompt that handles multi-layer evaluation
+        grader_prompt = self._create_adaptive_grader_prompt(scenarios)
 
         eval_config = self.client.evals.create(
             name=eval_name,
             data_source_config={"type": "logs"},
             testing_criteria=[{
                 "type": "score_model",
-                "name": "ASTK Evaluator",
+                "name": "ASTK Multi-Layer Evaluator",
                 "model": grader_model,
                 "input": [
                     {"role": "system", "content": grader_prompt},
                     {"role": "user", "content": "{{item.input}}\n\nResponse to evaluate:\n{{sample.output_text}}"}
                 ],
                 "range": [1, 10],
-                "pass_threshold": 6.0,
+                "pass_threshold": 7.0,
+                "multi_layer": True,
+                "evaluation_dimensions": self._extract_evaluation_dimensions(scenarios)
             }]
         )
 
         return eval_config.id
+
+    def _create_adaptive_grader_prompt(self, scenarios: List[ScenarioConfig]) -> str:
+        """Create an adaptive grader prompt based on scenario complexity"""
+
+        # Analyze scenario characteristics
+        difficulties = [getattr(s, 'difficulty', 'intermediate')
+                        for s in scenarios]
+        categories = [getattr(s, 'category', 'general') for s in scenarios]
+
+        expert_ratio = difficulties.count('expert') / len(difficulties)
+        has_security = 'security' in categories
+        has_ethics = 'ethics' in categories
+        has_systems = 'systems_analysis' in categories
+
+        base_prompt = """
+You are **ASTK Multi-Layer Evaluator**, an expert AI assessment system designed to evaluate 
+agent responses across multiple dimensions with professional rigor.
+
+### Evaluation Approach
+
+This evaluation uses a sophisticated multi-layer assessment framework:
+
+1. **Technical Accuracy & Correctness (30%)**
+   • Factual accuracy and logical soundness
+   • Domain-specific knowledge demonstration
+   • Absence of hallucinations or errors
+
+2. **Depth & Comprehensiveness (25%)**  
+   • Thorough coverage of the problem space
+   • Appropriate level of detail for complexity
+   • Addresses all aspects of the query
+
+3. **Reasoning Quality (25%)**
+   • Logical consistency and clear argumentation
+   • Proper handling of complexity and nuance
+   • Evidence-based conclusions
+
+4. **Practical Value & Insight (20%)**
+   • Actionable recommendations and insights
+   • Real-world applicability
+   • Professional-grade analysis
+"""
+
+        # Add specialized criteria based on scenario analysis
+        if expert_ratio > 0.5:
+            base_prompt += """
+### Expert-Level Assessment Criteria
+
+Given the expert-level complexity of these scenarios:
+• Demonstrate deep domain expertise and sophisticated reasoning
+• Show awareness of edge cases, trade-offs, and systemic implications  
+• Provide novel insights beyond surface-level analysis
+• Handle ambiguity and competing considerations expertly
+"""
+
+        if has_security:
+            base_prompt += """
+### Security Assessment Standards
+
+For security-related evaluations:
+• Assess threat model completeness and accuracy
+• Evaluate defense-in-depth and risk mitigation strategies
+• Consider adversarial perspectives and attack scenarios
+• Verify compliance with security best practices
+"""
+
+        if has_ethics:
+            base_prompt += """
+### Ethical Reasoning Standards
+
+For ethical scenarios:
+• Evaluate moral reasoning framework soundness
+• Assess consideration of competing ethical principles
+• Check for bias awareness and stakeholder consideration
+• Verify logical consistency in ethical conclusions
+"""
+
+        if has_systems:
+            base_prompt += """
+### Systems Thinking Standards
+
+For complex systems analysis:
+• Evaluate understanding of interconnections and feedback loops
+• Assess consideration of second and third-order effects
+• Check for systems-level perspective vs. reductionist thinking
+• Verify scalability and sustainability considerations
+"""
+
+        base_prompt += """
+### Scoring Guidelines (1-10 scale)
+
+**9-10: Exceptional**
+- Expert-level demonstration across all dimensions
+- Novel insights and sophisticated reasoning
+- Comprehensive and practically valuable
+
+**7-8: Strong Performance**  
+- Solid competency with minor gaps
+- Good reasoning and practical value
+- Meets professional standards
+
+**5-6: Adequate**
+- Basic requirements met with notable limitations
+- Some gaps in reasoning or comprehensiveness
+- Room for significant improvement
+
+**1-4: Inadequate**
+- Major deficiencies in accuracy or reasoning
+- Incomplete or impractical responses
+- Falls short of professional standards
+
+Return detailed JSON evaluation with dimension scores and comprehensive feedback.
+"""
+
+        return base_prompt
+
+    def _extract_evaluation_dimensions(self, scenarios: List[ScenarioConfig]) -> List[str]:
+        """Extract evaluation dimensions from scenarios for metadata"""
+        dimensions = set()
+
+        for scenario in scenarios:
+            if hasattr(scenario.success, 'openai_evaluations'):
+                for eval_config in scenario.success.openai_evaluations:
+                    # Extract dimension names from prompt if structured
+                    prompt = eval_config.prompt
+                    # Simple extraction - could be more sophisticated
+                    if 'Technical Accuracy' in prompt:
+                        dimensions.add('technical_accuracy')
+                    if 'Completeness' in prompt:
+                        dimensions.add('completeness')
+                    if 'Innovation' in prompt or 'Creativity' in prompt:
+                        dimensions.add('innovation')
+                    if 'Ethics' in prompt or 'Ethical' in prompt:
+                        dimensions.add('ethical_reasoning')
+                    if 'Security' in prompt:
+                        dimensions.add('security_analysis')
+                    if 'Systems' in prompt:
+                        dimensions.add('systems_thinking')
+
+        return list(dimensions) if dimensions else ['accuracy', 'completeness', 'clarity', 'usefulness']
 
     def run_comparative_evaluation(
         self,
@@ -74,7 +470,7 @@ class OpenAIEvalsAdapter:
         data_limit: int = 50
     ) -> Dict[str, Any]:
         """
-        Run comparative evaluation between two models
+        Run comparative evaluation between two models with multi-layer analysis
 
         Args:
             eval_id: ID of the evaluation to run
@@ -83,11 +479,11 @@ class OpenAIEvalsAdapter:
             data_limit: Number of samples to evaluate
 
         Returns:
-            Dictionary with evaluation results
+            Dictionary with detailed evaluation results
         """
         # Run baseline evaluation
         baseline_run = self.client.evals.runs.create(
-            name=f"Baseline - {baseline_model}",
+            name=f"Multi-Layer Baseline - {baseline_model}",
             eval_id=eval_id,
             data_source={
                 "type": "responses",
@@ -97,7 +493,7 @@ class OpenAIEvalsAdapter:
 
         # Run test evaluation
         test_run = self.client.evals.runs.create(
-            name=f"Test - {test_model}",
+            name=f"Multi-Layer Test - {test_model}",
             eval_id=eval_id,
             data_source={
                 "type": "responses",
@@ -113,7 +509,11 @@ class OpenAIEvalsAdapter:
         return {
             "baseline_run": baseline_run,
             "test_run": test_run,
-            "comparison_url": f"https://platform.openai.com/evals/compare/{baseline_run.id}/{test_run.id}"
+            "comparison_url": f"https://platform.openai.com/evals/compare/{baseline_run.id}/{test_run.id}",
+            "evaluation_type": "multi_layer",
+            "baseline_model": baseline_model,
+            "test_model": test_model,
+            "data_limit": data_limit
         }
 
     def evaluate_from_logs(
@@ -123,7 +523,7 @@ class OpenAIEvalsAdapter:
         model_filter: Optional[str] = None
     ) -> str:
         """
-        Evaluate agent performance based on logged responses
+        Evaluate agent performance from historical logs with multi-layer analysis
 
         Args:
             eval_id: ID of the evaluation to run
@@ -149,7 +549,7 @@ class OpenAIEvalsAdapter:
             data_source["source"]["model"] = model_filter
 
         run = self.client.evals.runs.create(
-            name=f"Historical Evaluation - {days_back} days",
+            name=f"Multi-Layer Historical Evaluation - {days_back} days",
             eval_id=eval_id,
             data_source=data_source,
         )

@@ -16,13 +16,13 @@ ASTK now integrates with OpenAI's professional Evals API, transforming it from a
 
 ```bash
 # Create professional evaluations
-astk evals create my_agent.py --eval-type code_qa --grader gpt-4
+python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
 
 # Run evaluations from logs
-astk evals run eval_12345
+python -m astk.cli evals run eval_12345
 
 # Compare models A/B testing
-astk evals compare eval_12345 gpt-4o-mini gpt-4-turbo
+python -m astk.cli evals compare eval_12345 gpt-4o-mini gpt-4-turbo
 ```
 
 #### **Professional Grader Prompts**
@@ -144,10 +144,10 @@ pip install -e ".[evals,dev]"
 export OPENAI_API_KEY="your-key-here"
 
 # Create evaluation
-astk evals create examples/agents/file_qa_agent.py --eval-type code_qa
+python -m astk.cli evals create examples/agents/file_qa_agent.py --eval-type code_qa
 
 # Traditional benchmark (still works)
-astk benchmark examples/agents/file_qa_agent.py
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
 ```
 
 ## 🎯 Backward Compatibility
@@ -199,5 +199,12 @@ astk benchmark examples/agents/file_qa_agent.py
 
 ```bash
 pip install "agent-sprint-testkit[evals]"
-astk evals create my_agent.py --eval-type code_qa --grader gpt-4
+python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
+```
+
+**🚀 Ready to test your AI agents?**
+
+```bash
+pip install agent-sprint-testkit[evals]
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
 ```

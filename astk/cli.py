@@ -8,8 +8,9 @@ import sys
 import os
 import subprocess
 import shutil
+import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 import webbrowser
 
 
@@ -389,7 +390,7 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        astk benchmark agents/my_agent.py --format markdown
+        python -m astk.cli benchmark agents/my_agent.py --format markdown
     
     - name: Upload Results
       uses: actions/upload-artifact@v3
@@ -404,7 +405,7 @@ jobs:
      "astk.yml").write_text(github_workflow)
     (project_path / "requirements.txt").write_text("astk>=0.1.0\n")
     (project_path / "README.md").write_text(
-        f"# {project_path.name}\n\nAI Agent with ASTK Testing\n\n## Usage\n\n```bash\nastk benchmark agents/my_agent.py\n```\n")
+        f"# {project_path.name}\n\nAI Agent with ASTK Testing\n\n## Usage\n\n```bash\npython -m astk.cli benchmark agents/my_agent.py\n```\n")
 
 
 def generate_html_report(result_file: Path):
@@ -528,6 +529,553 @@ def run_wrapper():
                        sys.argv[1:], check=True)
     except subprocess.CalledProcessError as e:
         sys.exit(e.returncode)
+
+
+@cli.group()
+def rigorous():
+    """🔬 Rigorous multi-layer evaluation scenarios with OpenAI grading"""
+    pass
+
+
+@rigorous.command()
+@click.argument('agent_path')
+@click.option('--scenarios', default='examples/benchmarks/scenarios/rigorous_multilayer_scenarios.yaml',
+              help='Path to rigorous scenarios YAML file')
+@click.option('--evaluators', multiple=True,
+              default=['gpt-4', 'o1-preview'],
+              help='OpenAI models to use as evaluators')
+@click.option('--parallel', is_flag=True, default=False,
+              help='Run scenarios in parallel (faster but more expensive)')
+@click.option('--max-cost', type=float, default=10.0,
+              help='Maximum total cost in USD for all evaluations')
+@click.option('--output-format', type=click.Choice(['json', 'yaml', 'detailed']),
+              default='detailed', help='Output format for results')
+@click.option('--save-results', is_flag=True, default=True,
+              help='Save detailed results to file')
+@click.option('--fail-fast', is_flag=True, default=False,
+              help='Stop on first scenario failure')
+@click.option('--retry-failures', type=int, default=1,
+              help='Number of retry attempts for failed evaluations')
+def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
+        max_cost: float, output_format: str, save_results: bool,
+        fail_fast: bool, retry_failures: int):
+    """
+    🚀 Run rigorous multi-layer evaluation scenarios
+
+    This command runs sophisticated evaluation scenarios that use multiple layers
+    of OpenAI evaluation for comprehensive agent assessment.
+
+    Example:
+        astk rigorous run my_agent.py --evaluators gpt-4 o1-preview --max-cost 15.0
+    """
+    import yaml
+    import asyncio
+    from datetime import datetime
+    from pathlib import Path
+
+    try:
+        from .evals_integration import OpenAIEvalsAdapter, MultiLayerEvaluationResult
+        from .schema import ScenarioConfig, BenchmarkSuite, TestSession, AgentConfig, EvaluationResult
+    except ImportError as e:
+        click.echo(f"❌ Multi-layer evaluation not available: {e}")
+        click.echo("💡 Install with: pip install openai>=1.50.0")
+        sys.exit(1)
+
+    click.echo("🔬 ASTK Rigorous Multi-Layer Evaluation")
+    click.echo("=" * 50)
+    click.echo(f"🎯 Agent: {agent_path}")
+    click.echo(f"📋 Scenarios: {scenarios}")
+    click.echo(f"🤖 Evaluators: {', '.join(evaluators)}")
+    click.echo(f"💰 Max Cost: ${max_cost:.2f}")
+    click.echo(f"⚡ Parallel: {'Yes' if parallel else 'No'}")
+    click.echo()
+
+    # Load scenarios
+    try:
+        with open(scenarios, 'r') as f:
+            scenarios_data = yaml.safe_load(f)
+    except FileNotFoundError:
+        click.echo(f"❌ Scenarios file not found: {scenarios}")
+        sys.exit(1)
+    except yaml.YAMLError as e:
+        click.echo(f"❌ Invalid YAML in scenarios file: {e}")
+        sys.exit(1)
+
+    # Parse scenarios
+    try:
+        scenario_configs = []
+        for scenario_data in scenarios_data.get('scenarios', []):
+            # Convert YAML structure to ScenarioConfig
+            scenario_config = _parse_yaml_scenario(scenario_data)
+            scenario_configs.append(scenario_config)
+
+        if not scenario_configs:
+            click.echo("❌ No valid scenarios found in file")
+            sys.exit(1)
+
+        click.echo(f"✅ Loaded {len(scenario_configs)} rigorous scenarios")
+
+        # Display scenario summary
+        difficulty_counts = {}
+        category_counts = {}
+        total_estimated_cost = 0.0
+
+        for config in scenario_configs:
+            difficulty = getattr(config, 'difficulty', 'unknown')
+            category = getattr(config, 'category', 'unknown')
+
+            difficulty_counts[difficulty] = difficulty_counts.get(
+                difficulty, 0) + 1
+            category_counts[category] = category_counts.get(category, 0) + 1
+
+            if hasattr(config, 'budgets') and config.budgets and config.budgets.cost_usd:
+                total_estimated_cost += config.budgets.cost_usd
+
+        click.echo(f"📊 Difficulty distribution: {dict(difficulty_counts)}")
+        click.echo(f"🏷️  Category distribution: {dict(category_counts)}")
+        click.echo(f"💸 Estimated total cost: ${total_estimated_cost:.2f}")
+
+        if total_estimated_cost > max_cost:
+            click.echo(f"⚠️  Estimated cost exceeds maximum (${max_cost:.2f})")
+            if not click.confirm("Continue anyway?"):
+                sys.exit(0)
+
+        click.echo()
+
+    except Exception as e:
+        click.echo(f"❌ Error parsing scenarios: {e}")
+        sys.exit(1)
+
+    # Initialize evaluation system
+    try:
+        adapter = OpenAIEvalsAdapter()
+        click.echo("✅ OpenAI Evals adapter initialized")
+    except Exception as e:
+        click.echo(f"❌ Failed to initialize OpenAI Evals: {e}")
+        sys.exit(1)
+
+    # Run evaluation
+    session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    start_time = datetime.now()
+
+    click.echo("🚀 Starting rigorous evaluation...")
+    click.echo()
+
+    results = []
+    total_cost = 0.0
+    scenarios_passed = 0
+
+    try:
+        for i, scenario_config in enumerate(scenario_configs, 1):
+            scenario_name = getattr(scenario_config, 'name', f'scenario_{i}')
+            click.echo(
+                f"[{i}/{len(scenario_configs)}] 🧪 Testing: {scenario_name}")
+
+            scenario_start = datetime.now()
+
+            try:
+                # Run the agent scenario
+                agent_response = _run_agent_scenario(
+                    agent_path, scenario_config)
+
+                # Perform multi-layer evaluation
+                evaluation_result = adapter.evaluate_response_multilayer(
+                    response=agent_response,
+                    scenario_config=scenario_config,
+                    context={"evaluators": evaluators}
+                )
+
+                scenario_end = datetime.now()
+                execution_time = int(
+                    (scenario_end - scenario_start).total_seconds() * 1000)
+
+                # Calculate cost (estimate based on tokens and evaluator calls)
+                scenario_cost = _estimate_scenario_cost(
+                    evaluation_result, scenario_config)
+                total_cost += scenario_cost
+
+                # Create detailed result
+                result = EvaluationResult(
+                    scenario_name=scenario_name,
+                    passed=evaluation_result.passed,
+                    overall_score=evaluation_result.overall_score,
+                    layer_results=evaluation_result.layer_results,
+                    execution_time_ms=execution_time,
+                    cost_usd=scenario_cost,
+                    tokens_used=len(agent_response) // 4,  # Rough estimate
+                    timestamp=scenario_end.isoformat()
+                )
+
+                # Extract feedback from evaluation
+                for layer_name, layer_data in evaluation_result.layer_results.items():
+                    feedback = layer_data.get('feedback', '')
+                    if isinstance(feedback, str) and feedback.startswith('{'):
+                        try:
+                            feedback_data = json.loads(feedback)
+                            result.strengths.extend(
+                                feedback_data.get('strengths', []))
+                            result.weaknesses.extend(
+                                feedback_data.get('weaknesses', []))
+                            result.recommendations.extend(
+                                feedback_data.get('recommendations', []))
+                        except:
+                            pass
+
+                results.append(result)
+
+                if evaluation_result.passed:
+                    scenarios_passed += 1
+                    status = "✅ PASS"
+                    score_color = click.style(
+                        f"{evaluation_result.overall_score:.1f}/10", fg='green')
+                else:
+                    status = "❌ FAIL"
+                    score_color = click.style(
+                        f"{evaluation_result.overall_score:.1f}/10", fg='red')
+
+                click.echo(
+                    f"   {status} Score: {score_color} Cost: ${scenario_cost:.3f} Time: {execution_time}ms")
+
+                # Show layer breakdown
+                for layer_name, layer_data in evaluation_result.layer_results.items():
+                    layer_score = layer_data.get('score', 0)
+                    evaluator = layer_data.get('evaluator', 'unknown')
+                    layer_color = click.style(f"{layer_score:.1f}",
+                                              fg='green' if layer_score >= 7 else 'yellow' if layer_score >= 5 else 'red')
+                    click.echo(
+                        f"     └ {layer_name} ({evaluator}): {layer_color}")
+
+                if total_cost > max_cost:
+                    click.echo(
+                        f"💰 Cost limit exceeded (${total_cost:.2f} > ${max_cost:.2f})")
+                    break
+
+                if fail_fast and not evaluation_result.passed:
+                    click.echo(
+                        "⏹️  Fail-fast enabled, stopping on first failure")
+                    break
+
+            except Exception as e:
+                click.echo(f"   ❌ Error: {str(e)}")
+                if retry_failures > 0:
+                    click.echo(
+                        f"   🔄 Retrying ({retry_failures} attempts left)...")
+                    retry_failures -= 1
+                    continue
+                else:
+                    click.echo(
+                        f"   ⏭️  Skipping scenario due to repeated failures")
+
+            click.echo()
+
+    except KeyboardInterrupt:
+        click.echo("\n⏹️  Evaluation interrupted by user")
+
+    # Generate summary
+    end_time = datetime.now()
+    total_duration = int((end_time - start_time).total_seconds() * 1000)
+    pass_rate = scenarios_passed / len(results) if results else 0
+
+    click.echo("🏁 EVALUATION COMPLETE")
+    click.echo("=" * 50)
+    click.echo(
+        f"📊 Results: {scenarios_passed}/{len(results)} passed ({pass_rate:.1%})")
+    click.echo(f"💰 Total Cost: ${total_cost:.2f}")
+    click.echo(f"⏱️  Total Time: {total_duration/1000:.1f}s")
+
+    if results:
+        avg_score = sum(r.overall_score for r in results) / len(results)
+        score_color = click.style(f"{avg_score:.1f}/10",
+                                  fg='green' if avg_score >= 7 else 'yellow' if avg_score >= 5 else 'red')
+        click.echo(f"🎯 Average Score: {score_color}")
+
+        # Category and difficulty breakdown
+        _display_performance_breakdown(results, scenario_configs)
+
+    # Save results if requested
+    if save_results and results:
+        results_file = f"rigorous_evaluation_{session_id}.json"
+
+        # Create comprehensive session data
+        session_data = {
+            "session_id": session_id,
+            "agent_path": agent_path,
+            "scenarios_file": scenarios,
+            "evaluators": list(evaluators),
+            "settings": {
+                "parallel": parallel,
+                "max_cost": max_cost,
+                "fail_fast": fail_fast,
+                "retry_failures": retry_failures
+            },
+            "summary": {
+                "total_scenarios": len(scenario_configs),
+                "scenarios_run": len(results),
+                "scenarios_passed": scenarios_passed,
+                "pass_rate": pass_rate,
+                "average_score": avg_score if results else 0,
+                "total_cost_usd": total_cost,
+                "total_duration_ms": total_duration
+            },
+            "results": [result.dict() for result in results],
+            "timestamp": end_time.isoformat()
+        }
+
+        if output_format == 'json':
+            with open(results_file, 'w') as f:
+                json.dump(session_data, f, indent=2)
+        elif output_format == 'yaml':
+            results_file = results_file.replace('.json', '.yaml')
+            with open(results_file, 'w') as f:
+                yaml.dump(session_data, f, default_flow_style=False)
+        else:  # detailed
+            _save_detailed_results(
+                session_data, results_file.replace('.json', '_detailed.md'))
+
+        click.echo(f"💾 Results saved to: {results_file}")
+
+    # Exit with appropriate code
+    if pass_rate >= 0.7:  # 70% pass rate threshold
+        click.echo("🎉 Evaluation PASSED!")
+        sys.exit(0)
+    else:
+        click.echo("⚠️  Evaluation FAILED - Low pass rate")
+        sys.exit(1)
+
+
+def _parse_yaml_scenario(scenario_data: dict) -> 'ScenarioConfig':
+    """Parse YAML scenario data into ScenarioConfig"""
+    from .schema import ScenarioConfig, PersonaConfig, SuccessCriteria, BudgetConfig, ChaosConfig, OpenAIEvaluationConfig
+
+    # Parse persona
+    persona_data = scenario_data.get('persona', {})
+    persona = PersonaConfig(
+        archetype=persona_data.get('archetype', 'general'),
+        temperature=persona_data.get('temperature', 0.7),
+        traits=persona_data.get('traits', [])
+    )
+
+    # Parse success criteria
+    success_data = scenario_data.get('success', {})
+
+    # Parse OpenAI evaluations
+    openai_evals = []
+    for eval_data in success_data.get('openai_evaluations', []):
+        openai_eval = OpenAIEvaluationConfig(
+            evaluator=eval_data.get('evaluator', 'gpt-4'),
+            prompt=eval_data.get('prompt', ''),
+            pass_threshold=eval_data.get('pass_threshold', 7.0),
+            weight=eval_data.get('weight', 1.0),
+            evaluation_type=eval_data.get('evaluation_type', 'general')
+        )
+        openai_evals.append(openai_eval)
+
+    success = SuccessCriteria(
+        regex=success_data.get('regex'),
+        semantic_score=success_data.get('semantic_score'),
+        task_specific=success_data.get('task_specific'),
+        openai_evaluations=openai_evals,
+        require_all_evaluations_pass=success_data.get(
+            'require_all_evaluations_pass', True),
+        overall_pass_threshold=success_data.get('overall_pass_threshold', 7.0)
+    )
+
+    # Parse budgets
+    budgets = None
+    if 'budgets' in scenario_data:
+        budget_data = scenario_data['budgets']
+        budgets = BudgetConfig(
+            latency_ms=budget_data.get('latency_ms'),
+            cost_usd=budget_data.get('cost_usd'),
+            tokens=budget_data.get('tokens'),
+            evaluation_cost_usd=budget_data.get('evaluation_cost_usd'),
+            retry_budget=budget_data.get('retry_budget', 3)
+        )
+
+    # Parse chaos
+    chaos = None
+    if 'chaos' in scenario_data:
+        chaos_data = scenario_data['chaos']
+        chaos = ChaosConfig(
+            drop_tool=chaos_data.get('drop_tool', []),
+            inject_latency=chaos_data.get('inject_latency', []),
+            malform_messages=chaos_data.get('malform_messages', False),
+            adversarial_prompts=chaos_data.get('adversarial_prompts', False),
+            memory_pressure=chaos_data.get('memory_pressure', False),
+            network_instability=chaos_data.get('network_instability', False)
+        )
+
+    return ScenarioConfig(
+        name=scenario_data.get('name'),
+        task=scenario_data.get('task', 'unknown'),
+        description=scenario_data.get('description'),
+        difficulty=scenario_data.get('difficulty', 'intermediate'),
+        category=scenario_data.get('category', 'general'),
+        persona=persona,
+        protocol=scenario_data.get('protocol', 'A2A'),
+        success=success,
+        input_prompt=scenario_data.get('input_prompt'),
+        budgets=budgets,
+        chaos=chaos
+    )
+
+
+def _run_agent_scenario(agent_path: str, scenario_config: 'ScenarioConfig') -> str:
+    """Run agent with scenario input and return response"""
+    import subprocess
+
+    input_prompt = getattr(scenario_config, 'input_prompt',
+                           '') or f"Execute task: {scenario_config.task}"
+
+    try:
+        result = subprocess.run([
+            sys.executable, agent_path, input_prompt
+        ], capture_output=True, text=True, timeout=60)
+
+        if result.returncode == 0:
+            return result.stdout
+        else:
+            raise Exception(
+                f"Agent failed with return code {result.returncode}: {result.stderr}")
+
+    except subprocess.TimeoutExpired:
+        raise Exception("Agent execution timed out after 60 seconds")
+    except Exception as e:
+        raise Exception(f"Agent execution failed: {str(e)}")
+
+
+def _estimate_scenario_cost(evaluation_result: 'MultiLayerEvaluationResult', scenario_config: 'ScenarioConfig') -> float:
+    """Estimate the cost of running a scenario with multi-layer evaluation"""
+
+    # Base cost for scenario execution
+    base_cost = 0.01
+
+    # Cost per OpenAI evaluation (rough estimate)
+    # GPT-4: ~$0.03/1K tokens, O1-preview: ~$0.15/1K tokens
+    eval_costs = {
+        'gpt-4': 0.05,
+        'gpt-4-turbo': 0.04,
+        'o1-preview': 0.20,
+        'o1-mini': 0.10
+    }
+
+    total_cost = base_cost
+
+    for layer_name, layer_data in evaluation_result.layer_results.items():
+        evaluator = layer_data.get('evaluator', 'gpt-4')
+        if evaluator in eval_costs:
+            total_cost += eval_costs[evaluator]
+        else:
+            total_cost += 0.05  # Default cost
+
+    return total_cost
+
+
+def _display_performance_breakdown(results: List['EvaluationResult'], scenario_configs: List['ScenarioConfig']):
+    """Display detailed performance breakdown by category and difficulty"""
+
+    # Category performance
+    category_performance = {}
+    difficulty_performance = {}
+
+    for i, result in enumerate(results):
+        if i < len(scenario_configs):
+            config = scenario_configs[i]
+            category = getattr(config, 'category', 'unknown')
+            difficulty = getattr(config, 'difficulty', 'unknown')
+
+            if category not in category_performance:
+                category_performance[category] = []
+            if difficulty not in difficulty_performance:
+                difficulty_performance[difficulty] = []
+
+            category_performance[category].append(result.overall_score)
+            difficulty_performance[difficulty].append(result.overall_score)
+
+    if category_performance:
+        click.echo("\n📂 Performance by Category:")
+        for category, scores in category_performance.items():
+            avg_score = sum(scores) / len(scores)
+            pass_rate = sum(1 for s in scores if s >= 7) / len(scores)
+            score_color = click.style(f"{avg_score:.1f}",
+                                      fg='green' if avg_score >= 7 else 'yellow' if avg_score >= 5 else 'red')
+            click.echo(
+                f"   {category}: {score_color}/10 ({pass_rate:.0%} pass rate)")
+
+    if difficulty_performance:
+        click.echo("\n🎓 Performance by Difficulty:")
+        for difficulty, scores in difficulty_performance.items():
+            avg_score = sum(scores) / len(scores)
+            pass_rate = sum(1 for s in scores if s >= 7) / len(scores)
+            score_color = click.style(f"{avg_score:.1f}",
+                                      fg='green' if avg_score >= 7 else 'yellow' if avg_score >= 5 else 'red')
+            click.echo(
+                f"   {difficulty}: {score_color}/10 ({pass_rate:.0%} pass rate)")
+
+
+def _save_detailed_results(session_data: dict, filename: str):
+    """Save detailed markdown report of the evaluation results"""
+
+    with open(filename, 'w') as f:
+        f.write(f"# ASTK Rigorous Multi-Layer Evaluation Report\n\n")
+        f.write(f"**Session ID:** {session_data['session_id']}\n")
+        f.write(f"**Agent:** {session_data['agent_path']}\n")
+        f.write(f"**Timestamp:** {session_data['timestamp']}\n\n")
+
+        # Summary
+        summary = session_data['summary']
+        f.write(f"## Summary\n\n")
+        f.write(f"- **Total Scenarios:** {summary['total_scenarios']}\n")
+        f.write(f"- **Scenarios Run:** {summary['scenarios_run']}\n")
+        f.write(f"- **Pass Rate:** {summary['pass_rate']:.1%}\n")
+        f.write(f"- **Average Score:** {summary['average_score']:.1f}/10\n")
+        f.write(f"- **Total Cost:** ${summary['total_cost_usd']:.2f}\n")
+        f.write(
+            f"- **Total Duration:** {summary['total_duration_ms']/1000:.1f}s\n\n")
+
+        # Detailed results
+        f.write(f"## Detailed Results\n\n")
+
+        for result_data in session_data['results']:
+            f.write(f"### {result_data['scenario_name']}\n\n")
+
+            status = "✅ PASSED" if result_data['passed'] else "❌ FAILED"
+            f.write(f"**Status:** {status}\n")
+            f.write(
+                f"**Overall Score:** {result_data['overall_score']:.1f}/10\n")
+            f.write(
+                f"**Execution Time:** {result_data['execution_time_ms']}ms\n")
+            f.write(f"**Cost:** ${result_data['cost_usd']:.3f}\n\n")
+
+            # Layer results
+            if result_data['layer_results']:
+                f.write(f"**Evaluation Layers:**\n")
+                for layer_name, layer_data in result_data['layer_results'].items():
+                    score = layer_data.get('score', 0)
+                    evaluator = layer_data.get('evaluator', 'unknown')
+                    f.write(f"- {layer_name} ({evaluator}): {score:.1f}/10\n")
+                f.write("\n")
+
+            # Feedback
+            if result_data.get('strengths'):
+                f.write(f"**Strengths:**\n")
+                for strength in result_data['strengths']:
+                    f.write(f"- {strength}\n")
+                f.write("\n")
+
+            if result_data.get('weaknesses'):
+                f.write(f"**Areas for Improvement:**\n")
+                for weakness in result_data['weaknesses']:
+                    f.write(f"- {weakness}\n")
+                f.write("\n")
+
+            if result_data.get('recommendations'):
+                f.write(f"**Recommendations:**\n")
+                for rec in result_data['recommendations']:
+                    f.write(f"- {rec}\n")
+                f.write("\n")
+
+            f.write("---\n\n")
 
 
 if __name__ == "__main__":
