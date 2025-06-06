@@ -1,5 +1,18 @@
+# Core LangChain dependencies
 langchain>=0.1.0
 langchain-openai>=0.0.2
-python-dotenv>=1.0.0
+langchain-core>=0.1.0
+
+# Data validation and CLI
 pydantic>=2.0.0
-click>=8.0.0 
+click>=8.0.0
+
+# Telemetry and monitoring
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+
+# System utilities
+psutil>=5.9.0
+
+# Environment management (optional)
+python-dotenv>=1.0.0 

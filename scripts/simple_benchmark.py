@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Simple benchmark runner that doesn't rely on package imports
+ASTK Intelligent Benchmark Runner
+=================================
+
+A comprehensive benchmark tool for testing AI agents with diverse scenarios.
+
+Usage:
+    python scripts/simple_benchmark.py <agent_path>
+    ./scripts/simple_benchmark.py <agent_path>
+
+Example:
+    python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
 """
 
 import asyncio
@@ -10,6 +21,7 @@ import sys
 import subprocess
 from pathlib import Path
 from datetime import datetime
+import argparse
 
 
 async def run_agent_scenario(agent_path: Path, scenario_name: str, query: str) -> dict:
@@ -173,15 +185,53 @@ async def run_benchmark(agent_path: Path, results_dir: Path) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python scripts/simple_benchmark.py <agent_path>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="ASTK Intelligent Benchmark Runner - Test AI agents with diverse scenarios",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+    python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
+    ./scripts/simple_benchmark.py examples/agents/file_qa_agent.py
+    
+The benchmark runs 8 intelligent scenarios:
+    📁 File Discovery     - Find Python files and entry points
+    ⚙️ Config Analysis    - Analyze configuration files  
+    📖 README Comprehension - Read and explain project
+    🏗️ Code Structure    - Analyze directory structure
+    📚 Documentation Search - Explore documentation
+    🔗 Dependency Analysis - Analyze requirements/dependencies
+    💡 Example Exploration - Discover example code
+    🧪 Test Discovery     - Find testing framework
 
-    agent_path = Path(sys.argv[1])
+Results are saved to benchmark_results/ directory.
+        """
+    )
+
+    parser.add_argument(
+        "agent_path",
+        help="Path to the agent script to benchmark"
+    )
+
+    parser.add_argument(
+        "--results-dir",
+        default="benchmark_results",
+        help="Directory to save results (default: benchmark_results)"
+    )
+
+    args = parser.parse_args()
+
+    agent_path = Path(args.agent_path)
     if not agent_path.exists():
-        print(f"Agent file not found: {agent_path}")
+        print(f"❌ Error: Agent file not found: {agent_path}")
+        print("\nAvailable example agents:")
+        print("  📁 examples/agents/file_qa_agent.py - LangChain File Q&A agent")
         sys.exit(1)
 
-    results_dir = Path("benchmark_results")
+    results_dir = Path(args.results_dir)
+
+    print("🚀 ASTK Intelligent Benchmark Runner")
+    print(f"Agent: {agent_path}")
+    print(f"Results: {results_dir}")
+    print()
 
     asyncio.run(run_benchmark(agent_path, results_dir))

@@ -1,0 +1,76 @@
+{
+  "timestamp": "2025-06-06T09:16:45.661313",
+  "agent": "examples/agents/file_qa_agent.py",
+  "total_scenarios": 8,
+  "successful_scenarios": 8,
+  "success_rate": 1.0,
+  "total_duration_seconds": 34.08519697189331,
+  "average_scenario_duration": 4.2605776488780975,
+  "average_response_length": 735.375,
+  "scenarios": [
+    {
+      "scenario": "file_discovery",
+      "query": "Find all Python files in the project and tell me what the main entry points are.",
+      "duration_seconds": 3.5588579177856445,
+      "success": true,
+      "output": "Agent: The main entry points for the Python files in the project are as follows:\n\n1. **pyproject.toml:**\n   - Main entry point: Not specified in the file.\n\n2. **setup.py:**\n   - Main entry point: \n     - Command: `astk`\n     - Module: `astk.cli:cli`\n\nThese are the main entry points specified in the project files.\n",
+      "error": null
+    },
+    {
+      "scenario": "config_analysis",
+      "query": "Look for configuration files (like .yaml, .json, .toml) and summarize what they configure.",
+      "duration_seconds": 4.775503158569336,
+      "success": true,
+      "output": "Agent: I found the following configuration files:\n\n1. **pyproject.toml**:\n   - This file configures the project settings for \"astk\" (AgentSprint TestKit).\n   - It specifies metadata like project name, version, description, dependencies, authors, license, and more.\n   - It includes configurations for tools like Black and Isort.\n\n2. **otel-collector-config.yaml**:\n   - This YAML file configures the OpenTelemetry Collector.\n   - It defines receivers, processors, exporters, and service pipelines for tracing and metrics data.\n   - Specific configurations include endpoints for receivers, exporters, and additional settings like batch processing and verbosity levels.\n",
+      "error": null
+    },
+    {
+      "scenario": "readme_comprehension",
+      "query": "Read the README.md file and explain what this project does and how to use it.",
+      "duration_seconds": 4.951689004898071,
+      "success": true,
+      "output": "Agent: The project is called AgentSprint TestKit (ASTK), which is a CI-first behavioral-coverage and regression-gating framework designed to help engineers confidently ship new AI agents in less than 15 minutes. Here are some key features of ASTK:\n\n- Fast CI Integration: Median CI run time is less than 10 minutes over 200 synthetic conversations.\n- Synthetic Personas: Automatically generates diverse user dialogues to stress test agents.\n- Comprehensive Coverage: Provides greater than 90% scenario branch-coverage reporting.\n- Safety First: Includes red-team fuzzing and hallucination detection for safety.\n- Rich Telemetry: Integrates with OpenTelemetry to provide coverage, latency, and cost metrics.\n- Regression Prevention: Performs semantic diffing against production baseline to prevent regressions.\n- Chaos Engineering: Enables protocol-level fault injection and edge case testing.\n\nTo use ASTK, follow these steps:\n\n1. Install ASTK using pip:\n\n```bash\npip install astk\n```\n\n2. Add ASTK to your CI pipeline by creating a workflow file (e.g., `astk-ci.yml`) in the `.github/workflows` directory with the provided configuration.\n\n3. Define test scenarios in a YAML file (e.g., `scenarios.yaml`) where you specify the task, persona, protocol, success criteria, budgets, and chaos engineering settings.\n\nFor detailed documentation, visit [docs.astk.dev](https://docs.astk.dev). Contributions to the project are welcome, and you can find more details in the [Contributing Guide](CONTRIBUTING.md). The project is licensed under Apache-2.0.\n",
+      "error": null
+    },
+    {
+      "scenario": "code_structure",
+      "query": "Analyze the astk directory structure and explain the main components of this codebase.",
+      "duration_seconds": 3.4001898765563965,
+      "success": true,
+      "output": "Agent: The astk directory contains the following components:\n\n1. metrics.py: This file likely contains code related to measuring and analyzing metrics in the codebase.\n2. runner.py: This file may be responsible for running tasks or processes within the codebase.\n3. chaos.py: This file could be related to introducing chaos engineering practices or chaos testing in the codebase.\n4. __init__.py: This file is typically used to initialize the package and can contain import statements or initialization code.\n5. persona.py: This file might be related to defining personas or user roles within the codebase.\n6. __pycache__: This directory stores compiled Python files to improve performance.\n7. cli.py: This file could contain code for a command-line interface for interacting with the codebase.\n8. benchmarks: This directory likely contains code for benchmarking or performance testing.\n9. schema.py: This file may define schemas or data structures used in the codebase.\n\nThese components suggest that the codebase includes functionality related to metrics, running tasks, chaos engineering, personas, command-line interface, benchmarks, and data schemas.\n",
+      "error": null
+    },
+    {
+      "scenario": "documentation_search",
+      "query": "Look in the docs folder and summarize what documentation is available.",
+      "duration_seconds": 6.818347215652466,
+      "success": true,
+      "output": "Agent: The \"template.md\" file in the \"adr\" directory contains a template for Architecture Decision Records (ADRs). A summary of the template is as follows:\n\n- Status: Indicates whether the decision is Proposed, Accepted, Deprecated, or Superseded.\n- Context: Describes the issue motivating the decision or change.\n- Decision: Specifies the change being proposed or implemented, including algorithm/implementation choices.\n- Academic References: Lists relevant papers, articles, or documentation supporting the decision.\n- Consequences: Outlines the positive, negative, and neutral impacts of the change.\n- Implementation Notes: Provides specific details on how the decision should be implemented.\n- Related: Includes links to related ADRs, issues, or documentation.\n\nThis template serves as a structured format for documenting architectural decisions within a project.\n",
+      "error": null
+    },
+    {
+      "scenario": "dependency_analysis",
+      "query": "Find and analyze the requirements.txt or setup.py file to list the main dependencies.",
+      "duration_seconds": 4.191404104232788,
+      "success": true,
+      "output": "Agent: The main dependencies listed in the files are as follows:\n\n**requirements.txt**:\n- langchain>=0.1.0\n- langchain-openai>=0.0.2\n- python-dotenv>=1.0.0\n- pydantic>=2.0.0\n- click>=8.0.0\n\n**setup.py**:\n- click>=8.0.0\n- pyyaml>=6.0.0\n- numpy>=1.20.0\n- scipy>=1.7.0\n- plotly>=5.0.0\n- matplotlib>=3.4.0\n- tabulate>=0.8.0\n- opentelemetry-api>=1.0.0\n- opentelemetry-sdk>=1.0.0\n- opentelemetry-exporter-otlp>=1.0.0\n\nThese are the main dependencies required by the project.\n",
+      "error": null
+    },
+    {
+      "scenario": "example_exploration",
+      "query": "Explore the examples directory and describe what example code is available.",
+      "duration_seconds": 4.5880420207977295,
+      "success": true,
+      "output": "Agent: The example code available in the \"examples\" directory includes a file named \"basic_usage.ipynb\" which is a Jupyter Notebook file, a directory named \"benchmarks\", and a directory named \"data\". Additionally, within the \"agents\" directory, there is a Python file named \"file_qa_agent.py\" that contains code for a simple File Q&A Agent using LangChain. The File Q&A Agent can answer questions about files in a directory by reading the contents of files and listing files in a specified directory. The agent uses an OpenAI model and provides functions for reading files and listing files. The code demonstrates how to create the agent, process chat messages, and interact with the agent to answer questions about files.\n",
+      "error": null
+    },
+    {
+      "scenario": "test_discovery",
+      "query": "Look for test files and describe what testing framework and test cases exist.",
+      "duration_seconds": 1.8005878925323486,
+      "success": true,
+      "output": "Agent: I couldn't find a \"test\" directory to look for test files. Can you provide the specific directory where the test files are located?\n",
+      "error": null
+    }
+  ]
+}
