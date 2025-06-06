@@ -2,8 +2,14 @@
 Pydantic models for ASTK scenario configuration
 """
 
-from typing import List, Optional, Union
-from pydantic import BaseModel, Field, constr
+from typing import List, Dict, Any, Optional, Union
+from pydantic import BaseModel, Field
+try:
+    # Pydantic v2
+    from pydantic import field_validator
+except ImportError:
+    # Pydantic v1
+    from pydantic import validator as field_validator
 
 
 class PersonaConfig(BaseModel):
@@ -13,6 +19,15 @@ class PersonaConfig(BaseModel):
         0.7, ge=0.0, le=1.0, description="Sampling temperature")
     traits: Optional[List[str]] = Field(
         None, description="Additional persona traits")
+
+    class Config:
+        """Pydantic config"""
+        json_schema_extra = {
+            "example": {
+                "archetype": "impatient_mobile_user",
+                "temperature": 0.9
+            }
+        }
 
 
 class BudgetConfig(BaseModel):
@@ -30,7 +45,7 @@ class SuccessCriteria(BaseModel):
     semantic_score: Optional[float] = Field(
         None, ge=0.0, le=1.0, description="Min semantic similarity score"
     )
-    task_specific: Optional[dict] = Field(
+    task_specific: Optional[Dict[str, Any]] = Field(
         None, description="Task-specific success criteria")
 
 
@@ -48,11 +63,18 @@ class ScenarioConfig(BaseModel):
     """Top-level scenario configuration"""
     task: str = Field(..., description="Task identifier")
     persona: PersonaConfig
-    protocol: constr(regex="^(A2A|REST|GRPC)$") = Field(...,
-                                                        description="Agent protocol")
+    protocol: str = Field(..., description="Agent protocol")
     success: SuccessCriteria
     budgets: Optional[BudgetConfig] = None
-    chaos: Optional[Union[List[str], ChaosConfig]] = None
+    chaos: Optional[List[str]] = None
+
+    @field_validator('protocol')
+    @classmethod
+    def validate_protocol(cls, v):
+        """Validate protocol field"""
+        if v not in ["A2A", "REST", "GRPC"]:
+            raise ValueError("Protocol must be one of: A2A, REST, GRPC")
+        return v
 
     class Config:
         """Pydantic config"""
