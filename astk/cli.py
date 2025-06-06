@@ -880,9 +880,14 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
                     score_color = click.style(
                         f"{evaluation_result.overall_score:.1f}/10", fg='green')
                 else:
-                    status = "❌ FAIL"
-                    score_color = click.style(
-                        f"{evaluation_result.overall_score:.1f}/10", fg='red')
+                    if evaluation_result.overall_score > 7:
+                        status = "❌ FAIL (likely to a failure in one of the models' evaluations)"
+                        score_color = click.style(
+                            f"{evaluation_result.overall_score:.1f}/10", fg='red')
+                    else:
+                        status = "❌ FAIL"
+                        score_color = click.style(
+                            f"{evaluation_result.overall_score:.1f}/10", fg='red')
 
                 click.echo(
                     f"   {status} Score: {score_color} Cost: ${scenario_cost:.3f} Time: {execution_time}ms")
@@ -984,9 +989,6 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
                 session_data, results_file.replace('.json', '_detailed.md'))
 
         click.echo(f"💾 Results saved to: {results_file}")
-
-    # move the file into rigorous_evaluation directory
-    os.rename(results_file, f'rigorous_evaluation/{results_file}')
 
     # Exit with appropriate code
     if pass_rate >= 0.7:  # 70% pass rate threshold
