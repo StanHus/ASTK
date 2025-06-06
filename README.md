@@ -1,11 +1,11 @@
 # AgentSprint TestKit (ASTK) 🚀
 
-## Usage Example
-Please see https://github.com/StanHus/astk-test
-
 > Universal AI agent benchmarking and testing framework
 
 ASTK is a comprehensive testing framework for AI agents that evaluates performance, intelligence, and capabilities through diverse scenarios. Test your agents against real-world tasks like file analysis, code comprehension, and complex reasoning.
+
+## Usage Example
+Please see https://github.com/StanHus/astk-test
 
 ## 🎯 Features
 
