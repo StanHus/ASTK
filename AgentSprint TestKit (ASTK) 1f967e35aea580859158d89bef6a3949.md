@@ -6,7 +6,7 @@ Below is a formal **Statement of Work (SoW)** and a detailed, technically-orient
 
 ## Executive summary
 
-ASTK’s pipeline ingests an agent artefact (Docker image or Python entry-point) plus a declarative *Scenario-as-Code* file, auto-synthesises diverse user dialogues, fuzzes safety edges, computes reference-free quality scores, traces every tool call with OpenTelemetry, and produces a binary **ship/no-ship verdict** accompanied by dashboards and diff reports.  Nothing in Trilogy’s existing research stack provides PR-time gating, synthetic-persona stress tests or protocol-level chaos injections—making ASTK a net-new capability and a force-multiplier for the CoE’s “build fast, publish faster” mandate. ([arXiv](https://arxiv.org/abs/2308.03688?utm_source=chatgpt.com), [GitHub](https://github.com/traceloop/openllmetry?utm_source=chatgpt.com), [arXiv](https://arxiv.org/html/2406.11036v1?utm_source=chatgpt.com), [LangChain Blog](https://blog.langchain.dev/public-langsmith-benchmarks/?utm_source=chatgpt.com), [Langfuse](https://langfuse.com/faq/all/llm-observability?utm_source=chatgpt.com), [OpenAI Cookbook](https://cookbook.openai.com/examples/evaluation/how_to_eval_abstractive_summarization?utm_source=chatgpt.com))
+ASTK’s pipeline ingests an agent artefact (Docker image or Python entry-point) plus a declarative _Scenario-as-Code_ file, auto-synthesises diverse user dialogues, fuzzes safety edges, computes reference-free quality scores, traces every tool call with OpenTelemetry, and produces a binary **ship/no-ship verdict** accompanied by dashboards and diff reports. Nothing in Trilogy’s existing research stack provides PR-time gating, synthetic-persona stress tests or protocol-level chaos injections—making ASTK a net-new capability and a force-multiplier for the CoE’s “build fast, publish faster” mandate. ([arXiv](https://arxiv.org/abs/2308.03688?utm_source=chatgpt.com), [GitHub](https://github.com/traceloop/openllmetry?utm_source=chatgpt.com), [arXiv](https://arxiv.org/html/2406.11036v1?utm_source=chatgpt.com), [LangChain Blog](https://blog.langchain.dev/public-langsmith-benchmarks/?utm_source=chatgpt.com), [Langfuse](https://langfuse.com/faq/all/llm-observability?utm_source=chatgpt.com), [OpenAI Cookbook](https://cookbook.openai.com/examples/evaluation/how_to_eval_abstractive_summarization?utm_source=chatgpt.com))
 
 ---
 
@@ -37,15 +37,15 @@ Design, implement and open-source **AgentSprint TestKit** to:
 
 ## 2 Deliverables
 
-| # | Deliverable | Description |
-| --- | --- | --- |
-| **D1** | *ASTK-Core* package (`pip install astk`) | Runner, scenario parser, synthetic-user engine, metric plugins. |
-| **D2** | *GitHub-Actions starter* | `astk-ci.yml` that drops into any repo and uploads artefacts. |
-| **D3** | *Reference scenarios* | 10 ready-made YAML suites (FAQ-bot, code-agent, RAG-bot, vision-QA, etc.). |
-| **D4** | *Coverage & diff dashboards* | Grafana/Comet templates fed by OpenLLMetry spans. |
-| **D5** | *Security/chaos plugin set* | garak-based jailbreak fuzzers, latency & tool-failure injectors. |
-| **D6** | *Technical white-paper* | Internal doc mapping ASTK architecture to CoE standards; to be cross-posted on Substack. |
-| **D7** | *Loom demo & launch post* | 5-min walkthrough + “Why every PR gets a boss battle” article. |
+| #      | Deliverable                              | Description                                                                              |
+| ------ | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **D1** | _ASTK-Core_ package (`pip install astk`) | Runner, scenario parser, synthetic-user engine, metric plugins.                          |
+| **D2** | _GitHub-Actions starter_                 | `astk-ci.yml` that drops into any repo and uploads artefacts.                            |
+| **D3** | _Reference scenarios_                    | 10 ready-made YAML suites (FAQ-bot, code-agent, RAG-bot, vision-QA, etc.).               |
+| **D4** | _Coverage & diff dashboards_             | Grafana/Comet templates fed by OpenLLMetry spans.                                        |
+| **D5** | _Security/chaos plugin set_              | garak-based jailbreak fuzzers, latency & tool-failure injectors.                         |
+| **D6** | _Technical white-paper_                  | Internal doc mapping ASTK architecture to CoE standards; to be cross-posted on Substack. |
+| **D7** | _Loom demo & launch post_                | 5-min walkthrough + “Why every PR gets a boss battle” article.                           |
 
 ---
 
@@ -53,15 +53,15 @@ Design, implement and open-source **AgentSprint TestKit** to:
 
 ### 3.1 Timeline (12 weeks)
 
-| Week | Milestone | Key artefacts |
-| --- | --- | --- |
-| **1–2** | Repo bootstrap, Scenario-DSL α | `scenario.schema.json`, CLI skeleton |
-| **3–4** | **Synthetic-persona engine** using DeepEval Synthesizer; incorporate persona-diversity research ([Confident AI Docs](https://docs.confident-ai.com/tutorials/tutorial-dataset-synthesis?utm_source=chatgpt.com), [arXiv](https://arxiv.org/abs/2406.20094?utm_source=chatgpt.com)) | `astk.persona` module, unit tests |
-| **5–6** | **Metric layer** – integrate G-Eval prompts, SelfCheckGPT hallucination score, AgentBench-style task success ([arXiv](https://arxiv.org/abs/2308.03688?utm_source=chatgpt.com), [arXiv](https://arxiv.org/abs/2303.08896?utm_source=chatgpt.com), [OpenAI Cookbook](https://cookbook.openai.com/examples/evaluation/how_to_eval_abstractive_summarization?utm_source=chatgpt.com)) | `astk.metric`, YAML registry |
-| **7–8** | **Behavioural-coverage tracer** – OpenLLMetry spans, skill/tool heat-map; Grafana dashboard ([GitHub](https://github.com/traceloop/openllmetry?utm_source=chatgpt.com), [Langfuse](https://langfuse.com/faq/all/llm-observability?utm_source=chatgpt.com)) | `astk.trace`, `dashboards/coverage.json` |
-| **9–10** | **Safety & chaos plugins** – garak fuzz, latency spike, tool-drop; fault-oracle scorer ([arXiv](https://arxiv.org/html/2406.11036v1?utm_source=chatgpt.com)) | `astk.chaos`, sample fault manifest |
-| **11** | **GitHub-Actions template + diff gate** – LangSmith dataset diff API or local JSON comparator ([LangChain Blog](https://blog.langchain.dev/public-langsmith-benchmarks/?utm_source=chatgpt.com)) | `.github/workflows/astk-ci.yml` |
-| **12** | Public beta release, Loom demo, Substack post | D4–D7 complete |
+| Week     | Milestone                                                                                                                                                                                                                                                                                                                                                                          | Key artefacts                            |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **1–2**  | Repo bootstrap, Scenario-DSL α                                                                                                                                                                                                                                                                                                                                                     | `scenario.schema.json`, CLI skeleton     |
+| **3–4**  | **Synthetic-persona engine** using DeepEval Synthesizer; incorporate persona-diversity research ([Confident AI Docs](https://docs.confident-ai.com/tutorials/tutorial-dataset-synthesis?utm_source=chatgpt.com), [arXiv](https://arxiv.org/abs/2406.20094?utm_source=chatgpt.com))                                                                                                 | `astk.persona` module, unit tests        |
+| **5–6**  | **Metric layer** – integrate G-Eval prompts, SelfCheckGPT hallucination score, AgentBench-style task success ([arXiv](https://arxiv.org/abs/2308.03688?utm_source=chatgpt.com), [arXiv](https://arxiv.org/abs/2303.08896?utm_source=chatgpt.com), [OpenAI Cookbook](https://cookbook.openai.com/examples/evaluation/how_to_eval_abstractive_summarization?utm_source=chatgpt.com)) | `astk.metric`, YAML registry             |
+| **7–8**  | **Behavioural-coverage tracer** – OpenLLMetry spans, skill/tool heat-map; Grafana dashboard ([GitHub](https://github.com/traceloop/openllmetry?utm_source=chatgpt.com), [Langfuse](https://langfuse.com/faq/all/llm-observability?utm_source=chatgpt.com))                                                                                                                         | `astk.trace`, `dashboards/coverage.json` |
+| **9–10** | **Safety & chaos plugins** – garak fuzz, latency spike, tool-drop; fault-oracle scorer ([arXiv](https://arxiv.org/html/2406.11036v1?utm_source=chatgpt.com))                                                                                                                                                                                                                       | `astk.chaos`, sample fault manifest      |
+| **11**   | **GitHub-Actions template + diff gate** – LangSmith dataset diff API or local JSON comparator ([LangChain Blog](https://blog.langchain.dev/public-langsmith-benchmarks/?utm_source=chatgpt.com))                                                                                                                                                                                   | `.github/workflows/astk-ci.yml`          |
+| **12**   | Public beta release, Loom demo, Substack post                                                                                                                                                                                                                                                                                                                                      | D4–D7 complete                           |
 
 ### 3.2 Architectural components
 
@@ -92,15 +92,14 @@ budgets:
 chaos:
   - "drop_tool:search"
   - "inject_latency:1500"
-
 ```
 
-*Schema validated by `pydantic` for runtime safety.*
+_Schema validated by `pydantic` for runtime safety._
 
 ### 4.2 Synthetic-persona generation
 
 - Calls `deepeval.Synthesizer.generate(n=50, persona="...")` to emit diversified chat pairs. ([Confident AI Docs](https://docs.confident-ai.com/tutorials/tutorial-dataset-synthesis?utm_source=chatgpt.com))
-- Augments with *PersonaFuse* augmentation from recent 1 B-persona paper to widen edge cases. ([arXiv](https://arxiv.org/abs/2406.20094?utm_source=chatgpt.com))
+- Augments with _PersonaFuse_ augmentation from recent 1 B-persona paper to widen edge cases. ([arXiv](https://arxiv.org/abs/2406.20094?utm_source=chatgpt.com))
 
 ### 4.3 Metric pipeline
 
@@ -125,11 +124,11 @@ chaos:
 ## 5 Acceptance criteria
 
 1. **CI gate** rejects PR when any of:
-    - Quality-Δ < -5 %
-    - Hallucination score > threshold
-    - Coverage < 80 % skills/tools edges
-    - Latency budget exceeded
-    - Safety probe success ≥ 1
+   - Quality-Δ < -5 %
+   - Hallucination score > threshold
+   - Coverage < 80 % skills/tools edges
+   - Latency budget exceeded
+   - Safety probe success ≥ 1
 2. All tracer spans visible in Comet OTLP endpoint within 60 s of run.
 3. 100 % unit-test coverage of core DSL and metric modules; fuzz tests for chaos layer.
 4. Benchmarked throughput: 500 conversations/min on a single A10G GPU runner.
@@ -147,28 +146,28 @@ chaos:
 
 ## 7 Risks & mitigations
 
-| Risk | Likelihood | Mitigation |
-| --- | --- | --- |
-| API rate-limits inflate CI time | Medium | Parallel batch with adaptive back-off; cache embeddings locally. |
-| Rapid agent-framework churn | High | Thin adapters; version-pin matrix tested nightly. |
-| False-positive safety blocks | Medium | Provide bypass label `ci-override/astk`; auto-open JIRA for triage. |
-| GPU scarcity in CI | Low | Fallback to CPU + smaller models for smoke runs; nightly “full” tier. |
+| Risk                            | Likelihood | Mitigation                                                            |
+| ------------------------------- | ---------- | --------------------------------------------------------------------- |
+| API rate-limits inflate CI time | Medium     | Parallel batch with adaptive back-off; cache embeddings locally.      |
+| Rapid agent-framework churn     | High       | Thin adapters; version-pin matrix tested nightly.                     |
+| False-positive safety blocks    | Medium     | Provide bypass label `ci-override/astk`; auto-open JIRA for triage.   |
+| GPU scarcity in CI              | Low        | Fallback to CPU + smaller models for smoke runs; nightly “full” tier. |
 
 ---
 
 ## 8 Ownership & communication
 
-| Role | Responsibility |
-| --- | --- |
-| **VP AI CoE** (you) | Architecture, core code, releases, public comms. |
+| Role                    | Responsibility                                       |
+| ----------------------- | ---------------------------------------------------- |
+| **VP AI CoE** (you)     | Architecture, core code, releases, public comms.     |
 | CoE Engineer (0.25 FTE) | Dashboard wiring, Grafana infra, test data curation. |
-| Security liaison | Review garak findings, update probe pack monthly. |
-| DevOps shared services | Maintain self-hosted GPU runners, secrets store. |
+| Security liaison        | Review garak findings, update probe pack monthly.    |
+| DevOps shared services  | Maintain self-hosted GPU runners, secrets store.     |
 
-*Weekly* Loom stand-ups; *bi-weekly* Substack “lab-note” progress posts; *monthly* internal demo.
+_Weekly_ Loom stand-ups; _bi-weekly_ Substack “lab-note” progress posts; _monthly_ internal demo.
 
 ---
 
 ### Conclusion
 
-AgentSprint TestKit will give Trilogy a first-of-its-kind **CI safety net** for hyper-fast agent shipping—perfectly aligned with the CoE’s ethos yet covering a net-new problem space.  By week 12 you will have: a hardened open-source package, turnkey CI integration, executive-friendly dashboards, and a new stream of thought-leadership content to propel follower growth.
+AgentSprint TestKit will give Trilogy a first-of-its-kind **CI safety net** for hyper-fast agent shipping—perfectly aligned with the CoE’s ethos yet covering a net-new problem space. By week 12 you will have: a hardened open-source package, turnkey CI integration, executive-friendly dashboards, and a new stream of thought-leadership content to propel follower growth.
