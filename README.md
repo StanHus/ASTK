@@ -1,29 +1,39 @@
 # AgentSprint TestKit (ASTK) 🚀
 
-> Universal AI agent benchmarking and testing framework with professional-grade multi-layer evaluation
+> **Professional AI agent evaluation and testing framework with multi-tier assessment capabilities**
 
-ASTK is a comprehensive testing framework for AI agents that evaluates performance, intelligence, and capabilities through diverse scenarios. Test your agents against real-world tasks like file analysis, code comprehension, complex reasoning, and professional-grade multi-layer evaluation using OpenAI's infrastructure.
+ASTK is a comprehensive testing framework for AI agents that evaluates performance, intelligence, and capabilities through diverse scenarios. Test your agents against real-world tasks ranging from basic functionality to expert-level multi-layer evaluation using OpenAI's professional grading infrastructure.
 
-## Usage Example
-
-Please see https://github.com/StanHus/astk-test
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+[![PyPI Version](https://img.shields.io/pypi/v/agent-sprint-testkit.svg)](https://pypi.org/project/agent-sprint-testkit/)
 
 ## 🎯 Features
 
-- **🧠 Intelligent Benchmarks**: 8 diverse scenarios testing different AI capabilities
-- **🔬 Rigorous Multi-Layer Evaluation**: NEW! Professional-grade assessment using multiple OpenAI evaluators
-- **📊 Performance Metrics**: Response time, success rate, and quality analysis
-- **🔧 Easy Installation**: Simple pip install from PyPI
+- **🧠 3-Tier Evaluation System**: From basic testing to PhD-level assessment
+- **🔬 Rigorous Multi-Layer Evaluation**: Professional-grade assessment using multiple OpenAI evaluators
+- **📊 Performance Metrics**: Comprehensive analysis with response time, success rate, and quality scoring
+- **🔧 Easy Installation**: Simple pip install from PyPI with full cross-platform support
 - **🌐 Universal Testing**: Works with CLI agents, REST APIs, Python modules, and more
 - **🤖 Agent Ready**: Compatible with LangChain, OpenAI, and custom agents
-- **📁 Built-in Examples**: File Q&A agent and project templates
+- **📁 Built-in Examples**: File Q&A agent and project templates included
 - **⚙️ GitHub Actions**: Ready-to-use CI/CD workflow templates
-- **🎯 OpenAI Evals Integration**: Professional-grade evaluation using OpenAI's infrastructure
-- **⚡ Multiple Evaluation Tiers**: From basic testing to expert-level assessment
+- **🎯 OpenAI Evals Integration**: Enterprise-grade evaluation using OpenAI's infrastructure
+- **💰 Cost Management**: Built-in cost estimation and budgeting controls
 
-## 📋 Quick Start
+## 📊 Evaluation Tiers
 
-### 1. Install from PyPI
+ASTK provides three distinct testing tiers to meet different development and assessment needs:
+
+| Tier                           | Purpose               | Cost  | Time      | Pass Rate | Use Case                        |
+| ------------------------------ | --------------------- | ----- | --------- | --------- | ------------------------------- |
+| **🟢 TIER 1<br>Basic Testing** | Development feedback  | FREE  | 2-3 min   | 80-100%   | Daily development iterations    |
+| **🟡 TIER 2<br>Professional**  | Production validation | $1-5  | 5-10 min  | 60-80%    | Pre-deployment assessment       |
+| **🔴 TIER 3<br>Rigorous**      | Expert assessment     | $7-15 | 10-20 min | 10-30%    | Research, competition, academic |
+
+## 🚀 Quick Start
+
+### 1. Installation
 
 ```bash
 # Standard installation
@@ -33,41 +43,35 @@ pip install agent-sprint-testkit
 pip install agent-sprint-testkit[evals]
 ```
 
-### 2. Verify Installation
-
-```bash
-python -m astk.cli --help
-```
-
-### 3. Set API Key
+### 2. Setup API Key
 
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
-### 4. Initialize a Project
+### 3. Initialize Project
 
 ```bash
 python -m astk.cli init my-agent-tests
 cd my-agent-tests
 ```
 
-### 5. Run Your First Benchmark
+### 4. Run Your First Evaluation
 
 ```bash
-# Traditional ASTK benchmark (quick)
+# Tier 1: Basic Testing (FREE)
 python -m astk.cli benchmark examples/agents/file_qa_agent.py
 
-# NEW: Rigorous multi-layer evaluation (professional-grade)
-python -m astk.cli rigorous run my_agent.py
+# Tier 2: Professional Evaluation ($1-5)
+python -m astk.cli evals create my_agent.py --eval-type code_qa
 
-# OpenAI Evals integration (enterprise)
-python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
+# Tier 3: Rigorous Multi-Layer Assessment ($7-15)
+python -m astk.cli rigorous run my_agent.py --max-cost 10.0
 ```
 
-## 🔬 NEW: Rigorous Multi-Layer Evaluation
+## 🔬 Rigorous Multi-Layer Evaluation
 
-Experience professional-grade AI agent assessment with our new multi-layer evaluation system:
+Our flagship feature provides professional-grade AI agent assessment using multiple specialized OpenAI evaluators.
 
 ### ✨ Key Features
 
@@ -78,64 +82,32 @@ Experience professional-grade AI agent assessment with our new multi-layer evalu
 - **💰 Cost Transparent**: Built-in cost estimation and budgeting controls
 - **⚡ Parallel Execution**: Optional parallel processing for faster results
 
-### 🎯 Quick Start - Rigorous Evaluation
+### 🎯 Evaluation Tiers
+
+| Tier          | Difficulty   | Focus                                          | Scenarios   | Pass Threshold |
+| ------------- | ------------ | ---------------------------------------------- | ----------- | -------------- |
+| **🎯 Tier 1** | Foundational | Mathematical reasoning, Technical explanations | 2 scenarios | 7.0+           |
+| **🧠 Tier 2** | Advanced     | Creative problem-solving, Ethical dilemmas     | 2 scenarios | 7.5+           |
+| **⚡ Tier 3** | Expert       | Systems analysis, Security assessment          | 2 scenarios | 8.0+           |
+| **🚀 Tier 4** | Extreme      | Logical paradoxes, Crisis coordination         | 2 scenarios | 8.5+           |
+| **💥 Chaos**  | Adversarial  | Prompt injection resistance                    | 1 scenario  | 9.0+           |
+
+### 🚀 Quick Rigorous Evaluation
 
 ```bash
-# Run rigorous multi-layer evaluation
+# Basic rigorous evaluation
 python -m astk.cli rigorous run my_agent.py
 
-# With custom evaluators and cost limit
+# Development-friendly (lower cost)
+python -m astk.cli rigorous run my_agent.py --max-cost 3.0 --fail-fast
+
+# Professional assessment (parallel execution)
 python -m astk.cli rigorous run my_agent.py \
   --evaluators gpt-4 o1-preview gpt-4-turbo \
   --max-cost 15.0 \
-  --parallel
-
-# Use custom scenarios file
-python -m astk.cli rigorous run my_agent.py \
-  --scenarios path/to/my_scenarios.yaml \
+  --parallel \
   --output-format detailed \
   --save-results
-```
-
-### 📊 Evaluation Tiers
-
-| Tier          | Focus                   | Scenarios                                      | Evaluators                     | Pass Threshold |
-| ------------- | ----------------------- | ---------------------------------------------- | ------------------------------ | -------------- |
-| **🎯 Tier 1** | Foundational Competency | Mathematical reasoning, Technical explanations | GPT-4, O1-preview              | 7.0+           |
-| **🧠 Tier 2** | Advanced Cognitive      | Creative problem-solving, Ethical dilemmas     | GPT-4, O1-preview, GPT-4-turbo | 7.5+           |
-| **⚡ Tier 3** | Expert Integration      | Systems analysis, Security assessment          | 4 specialized evaluators       | 8.0+           |
-| **🚀 Tier 4** | Extreme Edge Cases      | Logical paradoxes, Crisis coordination         | 3-4 expert evaluators          | 8.5+           |
-
-### 🧪 Sample Rigorous Scenarios
-
-**Foundational Reasoning** - Multi-step mathematical problem with step verification
-
-```yaml
-- Mathematical reasoning with explicit step verification
-- Technical architecture explanations with domain expertise validation
-```
-
-**Creative Constraint Problem** - Food delivery app for offline/SMS/cash environments
-
-```yaml
-- Design offline-first solutions with cultural sensitivity evaluation
-- Business model viability assessed by multiple expert perspectives
-```
-
-**Ethical AI Dilemma** - Healthcare ICU bed allocation with competing moral frameworks
-
-```yaml
-- Medical ethics principles application
-- Legal and practical implementation assessment
-- Philosophical framework analysis
-```
-
-**Complex Systems Analysis** - Universal Basic Income systemic impact assessment
-
-```yaml
-- 6-domain analysis: economic, social, political, technological, environmental, international
-- Systemic thinking evaluation with feedback loop identification
-- Policy implementation and monitoring recommendations
 ```
 
 ### 💰 Cost Management
@@ -144,11 +116,11 @@ python -m astk.cli rigorous run my_agent.py \
 # Set cost limits
 python -m astk.cli rigorous run my_agent.py --max-cost 10.0
 
-# Check estimated costs before running
-python -m astk.cli rigorous run my_agent.py --dry-run
-
 # Use cost-effective evaluator combinations
-python -m astk.cli rigorous run my_agent.py --evaluators gpt-4 gpt-4-turbo
+python -m astk.cli rigorous run my_agent.py --evaluators gpt-4
+
+# Quick development testing
+python -m astk.cli rigorous run my_agent.py --max-cost 2.0 --fail-fast
 ```
 
 **Estimated Costs:**
@@ -157,55 +129,65 @@ python -m astk.cli rigorous run my_agent.py --evaluators gpt-4 gpt-4-turbo
 - Single expert scenario: ~$0.50-$1.30
 - Foundational scenarios: ~$0.30-$0.40
 
-## 🚀 Installation Options
+## 🎯 OpenAI Evals Integration
 
-### Option 1: Global Installation (Recommended)
+Professional-grade agent evaluation using OpenAI's enterprise infrastructure.
+
+### ✨ Features
+
+- **🏆 Enterprise-grade evaluation** using OpenAI's infrastructure
+- **🎯 AI-powered grading** with detailed scoring explanations
+- **⚖️ Easy A/B testing** between agent versions
+- **📊 Comparative analysis** with industry benchmarks
+
+### 🛠️ Quick Start
 
 ```bash
-# Standard installation
-pip install agent-sprint-testkit
+# Create evaluation for your agent
+python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
 
-# With all optional features
-pip install agent-sprint-testkit[evals,dev,docker]
+# Run evaluation
+python -m astk.cli evals run eval_12345
+
+# Compare two models
+python -m astk.cli evals compare eval_12345 gpt-4o-mini gpt-4-turbo
 ```
 
-### Option 2: Development Setup
+## 📋 Complete CLI Reference
+
+### ✅ Reliable Command Format
+
+**Always use this format for 100% reliability across all environments:**
 
 ```bash
-# Clone repository
-git clone https://github.com/your-org/astk.git
-cd astk
-
-# Create virtual environment
-python3.11 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install in development mode
-pip install -e .[evals,dev]
+python -m astk.cli <command>
 ```
 
-## 💻 CLI Commands
+This format works regardless of PATH configuration, virtual environments, or installation method.
 
 ### Core Commands
 
 ```bash
+# Show comprehensive help with all tiers
+python -m astk.cli --help
+
 # Initialize new project with templates
 python -m astk.cli init <project-name>
 
-# Run intelligent benchmarks
+# Run basic benchmarks (Tier 1)
 python -m astk.cli benchmark <agent-path>
 
-# Generate detailed reports
-python -m astk.cli report <results-dir>
-
-# Show example usage
+# Show examples and tier guide
 python -m astk.cli examples
+
+# Generate reports
+python -m astk.cli report <results-dir>
 ```
 
-### 🔬 Rigorous Multi-Layer Evaluation Commands
+### Rigorous Multi-Layer Evaluation
 
 ```bash
-# Run complete rigorous evaluation suite
+# Complete rigorous evaluation suite
 python -m astk.cli rigorous run <agent-path>
 
 # Custom evaluation with specific parameters
@@ -220,7 +202,7 @@ python -m astk.cli rigorous run <agent-path> \
 
 # Available options:
 # --scenarios: Custom scenarios YAML file
-# --evaluators: OpenAI models to use (gpt-4, o1-preview, gpt-4-turbo)
+# --evaluators: OpenAI models (gpt-4, o1-preview, gpt-4-turbo)
 # --parallel: Run scenarios in parallel (faster, more expensive)
 # --max-cost: Maximum total cost in USD
 # --output-format: json, yaml, or detailed markdown
@@ -229,290 +211,156 @@ python -m astk.cli rigorous run <agent-path> \
 # --retry-failures: Number of retry attempts (default: 1)
 ```
 
-### 🎯 OpenAI Evals Integration
+### OpenAI Evals Integration
 
 ```bash
 # Create professional evaluation
-python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
+python -m astk.cli evals create <agent-path> --eval-type code_qa --grader gpt-4
 
 # Run evaluation from logs
 python -m astk.cli evals run <eval-id>
 
 # Compare two models
-python -m astk.cli evals compare <eval-id> gpt-4o-mini gpt-4-turbo
+python -m astk.cli evals compare <eval-id> baseline-model test-model
 
 # Available eval types: general, code_qa, customer_service, research
 # Available graders: gpt-4, gpt-4-turbo, o3, o3-mini
 ```
 
-### Legacy Script Commands (still supported)
+## 🤖 Creating Your Agent
 
-```bash
-# Run intelligent benchmark
-python scripts/simple_benchmark.py <agent-path>
-
-# Quick agent runner
-python scripts/simple_run.py <agent-path>
-```
-
-## 🔬 Rigorous Evaluation Deep Dive
-
-### 📋 Complete Scenario List
-
-**Tier 1: Foundational Competency**
-
-- `foundational_reasoning_chain` - Mathematical reasoning with step verification
-- `technical_depth_assessment` - Microservices vs monolithic architecture analysis
-
-**Tier 2: Advanced Cognitive**
-
-- `creative_constraint_problem` - Offline food delivery app design
-- `ethical_ai_dilemma` - Healthcare ICU bed allocation ethics
-
-**Tier 3: Expert Integration**
-
-- `complex_systems_analysis` - Universal Basic Income systemic analysis
-- `adversarial_security_analysis` - Cryptocurrency exchange security assessment
-
-**Tier 4: Extreme Edge Cases**
-
-- `paradox_resolution_challenge` - AI logical paradoxes and self-reference
-- `multi_modal_crisis_coordination` - Hurricane + COVID + cyberattack crisis management
-
-**Chaos Engineering**
-
-- `adversarial_input_resistance` - Prompt injection and manipulation resistance
-
-### 🎓 Evaluation Methodology
-
-Each scenario employs sophisticated multi-layer evaluation:
-
-1. **Basic Validation Layer**: Regex pattern matching and semantic scoring
-2. **Primary OpenAI Evaluation**: Main grader with comprehensive rubric
-3. **Specialist Evaluations**: Domain experts (security, ethics, systems thinking)
-4. **Cross-Validation**: Multiple models for consensus scoring
-
-**Scoring Dimensions:**
-
-- Technical Accuracy (30-40%)
-- Completeness & Depth (25-30%)
-- Reasoning Quality (20-25%)
-- Practical Value & Implementation (10-20%)
-
-### 📊 Results & Reporting
-
-Comprehensive results include:
-
-```json
-{
-  "session_id": "20241210_143022",
-  "summary": {
-    "total_scenarios": 9,
-    "scenarios_passed": 7,
-    "pass_rate": 0.778,
-    "average_score": 7.8,
-    "total_cost_usd": 6.45,
-    "total_duration_ms": 28500
-  },
-  "category_performance": {
-    "reasoning": 8.2,
-    "technical_knowledge": 7.9,
-    "creativity": 7.1,
-    "ethics": 8.5,
-    "security": 6.8
-  },
-  "detailed_results": [...]
-}
-```
-
-### 🎯 Custom Scenarios
-
-Create your own rigorous scenarios:
-
-```yaml
-scenarios:
-  - name: "my_custom_scenario"
-    task: "custom_analysis"
-    description: "Custom multi-layer evaluation scenario"
-    difficulty: "expert"
-    category: "custom"
-    persona:
-      archetype: "domain_expert"
-      temperature: 0.4
-      traits: ["analytical", "thorough", "critical"]
-    protocol: "A2A"
-    input_prompt: |
-      Your complex scenario prompt here...
-    success:
-      regex: "(?i)(key|concepts|here)"
-      semantic_score: 0.85
-      openai_evaluations:
-        - evaluator: "gpt-4"
-          prompt: |
-            Evaluate this response as a domain expert:
-            1. Technical accuracy (40%)
-            2. Depth of analysis (30%) 
-            3. Practical applicability (20%)
-            4. Innovation (10%)
-            Score 1-10 per dimension with detailed feedback.
-          pass_threshold: 8.0
-        - evaluator: "o1-preview"
-          prompt: |
-            Verify logical consistency and identify gaps...
-          pass_threshold: 7.5
-    budgets:
-      latency_ms: 30000
-      cost_usd: 0.8
-      tokens: 4000
-```
-
-## 🎯 OpenAI Evals Integration
-
-ASTK integrates with OpenAI's professional Evals API for enterprise-grade agent evaluation:
-
-### ✨ Key Benefits
-
-- **🏆 Professional-grade evaluation** using OpenAI's infrastructure
-- **🎯 AI-powered grading** with detailed scoring explanations
-- **⚖️ Easy A/B testing** between agent versions
-- **📊 Comparative analysis** with industry benchmarks
-- **💰 Cost-effective** by leveraging existing logs
-
-### 🛠️ Quick Start with Evals
-
-```bash
-# 1. Install with Evals support
-pip install agent-sprint-testkit[evals]
-
-# 2. Set up OpenAI API key
-export OPENAI_API_KEY=your_key_here
-
-# 3. Create evaluation for your agent
-python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
-
-# 4. Run evaluation
-python -m astk.cli evals run eval_12345
-
-# 5. View results in OpenAI dashboard
-```
-
-### 📊 Evaluation Types
-
-| Type               | Description                 | Use Case                         |
-| ------------------ | --------------------------- | -------------------------------- |
-| `general`          | General-purpose evaluation  | All-around agent testing         |
-| `code_qa`          | Code analysis and Q&A       | Developer tools, code assistants |
-| `customer_service` | Customer support scenarios  | Support bots, help systems       |
-| `research`         | Research and analysis tasks | Research assistants, analysts    |
-
-### 🎓 Example Usage
+Your agent must accept queries as command-line arguments:
 
 ```python
-# Create and run evaluation programmatically
-from astk.evals_integration import OpenAIEvalsAdapter
+#!/usr/bin/env python3
+import sys
+import asyncio
 
-adapter = OpenAIEvalsAdapter()
-eval_id = adapter.create_eval_from_scenarios(
-    scenarios=my_scenarios,
-    eval_name="My Agent Evaluation",
-    grader_model="gpt-4"
-)
+class MyAgent:
+    def __init__(self):
+        # Initialize your agent here
+        pass
 
-# Run comparative evaluation
-results = adapter.run_comparative_evaluation(
-    eval_id=eval_id,
-    baseline_model="gpt-4o-mini",
-    test_model="gpt-4-turbo"
-)
+    async def process_query(self, query: str) -> str:
+        """Process a query and return response"""
+        # Your agent logic here
+        return f"Agent response to: {query}"
+
+async def main():
+    agent = MyAgent()
+
+    if len(sys.argv) > 1:
+        query = " ".join(sys.argv[1:])
+        response = await agent.process_query(query)
+        print(f"Agent: {response}")
+    else:
+        print("Agent: Ready for queries!")
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
-## 🤖 Available Agents
-
-### File Q&A Agent (`examples/agents/file_qa_agent.py`)
-
-A LangChain-powered agent that can:
-
-- **📁 List files** in directories
-- **📖 Read file contents** and summarize
-- **🔍 Answer questions** about file data
-- **🧭 Navigate** directory structures
-
-**Example Usage:**
+**Test your agent:**
 
 ```bash
-# Direct agent usage
-python examples/agents/file_qa_agent.py "What Python files are in this project?"
+# Make sure your agent works
+python my_agent.py "What is 2+2?"
 
-# Run with simple runner
-python scripts/simple_run.py examples/agents/file_qa_agent.py
-
-# Run rigorous multi-layer evaluation
-python -m astk.cli rigorous run examples/agents/file_qa_agent.py
+# Then run ASTK evaluation
+python -m astk.cli benchmark my_agent.py
 ```
 
-## 🧪 Benchmark Scenarios
+## 🧪 Example Scenarios
 
-The intelligent benchmark tests 8 diverse scenarios:
+### Basic Benchmark (Tier 1)
 
-| Scenario                    | Test                               | Capability                 |
-| --------------------------- | ---------------------------------- | -------------------------- |
-| **📁 File Discovery**       | Find Python files and entry points | File system navigation     |
-| **⚙️ Config Analysis**      | Analyze configuration files        | Technical comprehension    |
-| **📖 README Comprehension** | Read and explain project           | Document analysis          |
-| **🏗️ Code Structure**       | Analyze directory structure        | Architecture understanding |
-| **📚 Documentation Search** | Explore documentation              | Information retrieval      |
-| **🔗 Dependency Analysis**  | Analyze requirements/dependencies  | Technical analysis         |
-| **💡 Example Exploration**  | Discover example code              | Code comprehension         |
-| **🧪 Test Discovery**       | Find testing framework             | Development understanding  |
+Tests 8 fundamental capabilities:
 
-## 📊 Results & Metrics
+- **📁 File Discovery**: Find Python files and entry points
+- **⚙️ Config Analysis**: Analyze configuration files
+- **📖 README Comprehension**: Read and explain project documentation
+- **🏗️ Code Structure**: Analyze directory architecture
+- **📚 Documentation Search**: Explore project documentation
+- **🔗 Dependency Analysis**: Analyze requirements and dependencies
+- **💡 Example Exploration**: Discover example implementations
+- **🧪 Test Discovery**: Find testing frameworks and patterns
 
-Benchmarks generate comprehensive results:
+### Rigorous Multi-Layer Scenarios (Tier 3)
+
+**Foundational Reasoning** - Multi-step mathematical problem with verification:
+
+- Tests calculation accuracy and step-by-step reasoning
+- Multiple evaluators verify mathematical correctness
+
+**Creative Constraint Problem** - Design offline food delivery app:
+
+- Evaluates innovation within severe technical constraints
+- Cultural sensitivity and business viability assessment
+
+**Ethical AI Dilemma** - Healthcare ICU bed allocation:
+
+- Tests ethical reasoning and moral framework application
+- Legal compliance and practical implementation evaluation
+
+**Complex Systems Analysis** - Universal Basic Income impact:
+
+- 6-domain analysis across economic, social, political dimensions
+- Systems thinking with feedback loop identification
+
+**Adversarial Security Analysis** - Cryptocurrency exchange security:
+
+- Security expertise and threat modeling evaluation
+- Risk assessment and mitigation strategy analysis
+
+**Crisis Coordination** - Multi-modal disaster response:
+
+- Hurricane + COVID + cyberattack simultaneous crisis
+- Resource allocation and stakeholder coordination
+
+**Logical Paradoxes** - AI self-reference and consistency:
+
+- Tests handling of logical contradictions
+- Philosophical reasoning and consistency evaluation
+
+**Prompt Injection Resistance** - Adversarial input testing:
+
+- Security robustness against manipulation attempts
+- Attack resistance and safe response generation
+
+## 📊 Results & Analysis
+
+### Comprehensive Metrics
+
+ASTK provides detailed analysis across multiple dimensions:
 
 ```json
 {
-  "success_rate": 1.0,
-  "total_duration_seconds": 25.4,
-  "average_scenario_duration": 3.2,
-  "average_response_length": 847,
-  "scenarios": [...]
+  "success_rate": 0.78,
+  "complexity_score": 0.65,
+  "total_duration_seconds": 45.2,
+  "average_response_length": 1247,
+  "difficulty_breakdown": {
+    "foundational": { "success_rate": 1.0, "scenarios": "2/2" },
+    "advanced": { "success_rate": 0.6, "scenarios": "3/5" },
+    "expert": { "success_rate": 0.4, "scenarios": "2/5" }
+  },
+  "category_breakdown": {
+    "reasoning": { "success_rate": 0.67, "scenarios": "2/3" },
+    "creativity": { "success_rate": 0.5, "scenarios": "1/2" },
+    "ethics": { "success_rate": 1.0, "scenarios": "2/2" },
+    "security": { "success_rate": 0.3, "scenarios": "1/3" }
+  }
 }
 ```
 
-**Metrics Include:**
+### AI Capability Assessment
 
-- ✅ **Success Rate**: Percentage of completed scenarios
-- ⏱️ **Response Time**: Duration for each scenario
-- 📝 **Response Quality**: Length and content analysis
-- 🎯 **Scenario Details**: Individual query results
+Based on **Complexity Score**:
 
-## 🛠️ Available Tools
-
-### 🚀 ASTK CLI (Primary Interface)
-
-```bash
-# Initialize project with templates
-python -m astk.cli init my-project
-
-# Run rigorous multi-layer evaluation
-python -m astk.cli rigorous run <agent-path>
-
-# Generate HTML/JSON reports
-python -m astk.cli report <results-dir>
-
-# View usage examples
-python -m astk.cli examples
-```
-
-### 🧪 Legacy Script Runners (Still Supported)
-
-```bash
-# Direct benchmark execution
-python scripts/simple_benchmark.py <agent-path>
-
-# Basic agent runner
-python scripts/simple_run.py <agent-path>
-```
+- **🌟 Exceptional AI (80%+)**: Expert-level reasoning across multiple domains
+- **🔥 Advanced AI (60-79%)**: Strong performance on sophisticated tasks
+- **💡 Competent AI (40-59%)**: Good basic capabilities, room for improvement
+- **📚 Developing AI (<40%)**: Focus on foundational skills
 
 ## 🏗️ Project Structure
 
@@ -521,17 +369,17 @@ ASTK/
 ├── 🤖 examples/
 │   ├── agents/                  # Example AI agents
 │   │   └── file_qa_agent.py     # LangChain File Q&A agent
-│   └── benchmarks/scenarios/    # Rigorous evaluation scenarios
-│       └── rigorous_multilayer_scenarios.yaml  # NEW! 9 expert scenarios
+│   └── benchmarks/scenarios/    # Evaluation scenarios
+│       └── rigorous_multilayer_scenarios.yaml  # Expert scenarios
 ├── 📊 scripts/                  # Benchmark and utility scripts
-│   ├── simple_benchmark.py      # Intelligent benchmark runner ⭐
+│   ├── simple_benchmark.py      # Intelligent benchmark runner
 │   ├── simple_run.py            # Basic agent runner
-│   └── astk.py                  # Advanced CLI (WIP)
+│   └── astk.py                  # Advanced CLI
 ├── 🧠 astk/                     # Core ASTK framework
 │   ├── benchmarks/              # Benchmark modules
-│   ├── cli.py                   # Command-line interface ⭐ NEW: Rigorous commands
-│   ├── evals_integration.py     # OpenAI Evals integration ⭐ Enhanced
-│   ├── schema.py                # Data schemas ⭐ Enhanced for multi-layer
+│   ├── cli.py                   # Command-line interface
+│   ├── evals_integration.py     # OpenAI Evals integration
+│   ├── schema.py                # Data schemas
 │   └── *.py                     # Core modules
 ├── 📁 benchmark_results/        # Generated benchmark results
 ├── ⚙️ config/                   # Configuration files
@@ -540,76 +388,115 @@ ASTK/
 
 ## 🎮 Usage Examples
 
-### Run Agent Directly
+### Daily Development Workflow
 
 ```bash
-python examples/agents/file_qa_agent.py "Analyze the setup.py file"
+# Quick development testing (FREE)
+python -m astk.cli benchmark my_agent.py
+
+# Check specific capabilities
+python -m astk.cli benchmark my_agent.py --scenarios 5
+
+# View results
+python -m astk.cli report astk_results/
 ```
 
-### Quick Agent Test
+### Pre-Production Assessment
 
 ```bash
-python scripts/simple_run.py examples/agents/file_qa_agent.py
+# Professional evaluation
+python -m astk.cli evals create my_agent.py --eval-type code_qa
+
+# Run comprehensive assessment
+python -m astk.cli evals run eval_12345
 ```
 
-### Full Intelligence Benchmark
-
-```bash
-python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
-```
-
-### Rigorous Multi-Layer Evaluation
+### Research & Competition
 
 ```bash
 # Complete rigorous evaluation
-python -m astk.cli rigorous run examples/agents/file_qa_agent.py
+python -m astk.cli rigorous run my_agent.py --max-cost 15.0
 
-# With custom parameters
-python -m astk.cli rigorous run examples/agents/file_qa_agent.py \
-  --evaluators gpt-4 o1-preview \
-  --max-cost 10.0 \
-  --output-format detailed \
+# Parallel execution for speed
+python -m astk.cli rigorous run my_agent.py \
+  --parallel \
+  --evaluators gpt-4 o1-preview gpt-4-turbo \
   --save-results
 ```
 
-### Custom Queries
+### CI/CD Integration
 
-```bash
-python examples/agents/file_qa_agent.py "What is the purpose of the astk directory?"
+```yaml
+# .github/workflows/astk.yml
+name: ASTK Agent Evaluation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install ASTK
+        run: pip install agent-sprint-testkit[evals]
+
+      - name: Run Basic Benchmarks
+        run: python -m astk.cli benchmark agents/my_agent.py
+
+      - name: Run Professional Evaluation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -m astk.cli rigorous run agents/my_agent.py \
+            --max-cost 5.0 \
+            --fail-fast \
+            --save-results
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: evaluation-results
+          path: rigorous_evaluation_*.json
 ```
 
 ## 🔧 Troubleshooting
 
-### Common Issues
-
-**📦 Installation Problems**
+### Installation Issues
 
 ```bash
 # Update pip and reinstall
 pip install --upgrade pip
-pip install --upgrade agent-sprint-testkit
+pip install --upgrade agent-sprint-testkit[evals]
 
 # Verify installation
 python -m astk.cli --version
 python -c "import astk; print('ASTK loaded successfully')"
 ```
 
-**🛠️ CLI Command Issues**
+### CLI Command Issues
 
-For 100% reliable CLI usage that works across all environments:
+**✅ Always use the reliable format:**
 
 ```bash
-# Always use this format (recommended)
-python -m astk.cli benchmark examples/agents/file_qa_agent.py
-python -m astk.cli rigorous run examples/agents/file_qa_agent.py
+# Recommended (always works)
+python -m astk.cli benchmark my_agent.py
 
-# Instead of this (may fail with PATH issues)
-astk benchmark examples/agents/file_qa_agent.py
+# Avoid (may fail with PATH issues)
+astk benchmark my_agent.py
 ```
 
-📖 **See [RELIABLE_CLI_USAGE.md](RELIABLE_CLI_USAGE.md) for complete CLI guidance**
-
-**🔑 OpenAI API Issues**
+### OpenAI API Issues
 
 ```bash
 # Verify API key is set
@@ -622,86 +509,50 @@ export OPENAI_API_KEY="sk-..."
 python -c "import openai; print('OpenAI client ready')"
 ```
 
-**💰 Cost Management for Rigorous Evaluation**
+### Cost Management for Rigorous Evaluation
 
 ```bash
-# Check estimated costs before running
-python -m astk.cli rigorous run my_agent.py --dry-run
-
 # Set strict cost limits
 python -m astk.cli rigorous run my_agent.py --max-cost 5.0
 
 # Use fewer evaluators to reduce costs
 python -m astk.cli rigorous run my_agent.py --evaluators gpt-4
+
+# Development testing with fail-fast
+python -m astk.cli rigorous run my_agent.py --max-cost 2.0 --fail-fast
 ```
 
-**🐍 Development Environment Issues**
+### Agent Compatibility
+
+**Your agent must:**
+
+- Accept queries as command-line arguments
+- Print responses to stdout
+- Exit with code 0 on success
+
+**Test your agent:**
 
 ```bash
-# For development setup
-git clone https://github.com/your-org/astk.git
-cd astk
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -e .[evals,dev]
-```
-
-**🤖 Agent Compatibility**
-
-The framework supports multiple agent types:
-
-- **CLI agents**: Accept queries as command-line arguments
-- **Python modules**: Have a `chat()` method
-- **REST APIs**: Expose `/chat` endpoint
-- **Custom formats**: Use adapter patterns as needed
-
-## 🚀 Creating Your Own Agent
-
-Create a new agent that responds to command-line arguments:
-
-```python
-#!/usr/bin/env python3
-import sys
-
-async def main():
-    if len(sys.argv) > 1:
-        query = " ".join(sys.argv[1:])
-        # Process query and return response
-        print(f"Agent: {response}")
-    else:
-        # Default behavior
-        print("Agent: Ready!")
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
-```
-
-Then benchmark it:
-
-```bash
-# Traditional benchmark
-python scripts/simple_benchmark.py path/to/your_agent.py
-
-# Rigorous multi-layer evaluation
-python -m astk.cli rigorous run path/to/your_agent.py
+python your_agent.py "test question"
+# Should print a response and exit cleanly
 ```
 
 ## 📈 Performance Tips
 
-- **⚡ Faster Responses**: Use GPT-3.5-turbo for speed
-- **🧠 Better Intelligence**: Use GPT-4 for complex reasoning
-- **💰 Cost Optimization**: Monitor token usage and use `--max-cost` limits
-- **🔧 Custom Scenarios**: Create domain-specific rigorous scenarios
+- **⚡ Faster Responses**: Optimize your agent's processing pipeline
+- **🧠 Better Intelligence**: Use more sophisticated reasoning patterns
+- **💰 Cost Optimization**: Use `--max-cost` limits and selective evaluators
+- **🔧 Custom Scenarios**: Create domain-specific evaluation scenarios
 - **⚡ Parallel Processing**: Use `--parallel` for faster rigorous evaluation
-- **🎯 Targeted Testing**: Use specific scenario categories for focused evaluation
+- **🎯 Targeted Testing**: Focus on specific capability categories
 
 ## 🤝 Contributing
 
-1. Create new agents in `examples/agents/`
-2. Add benchmark scenarios in `scripts/simple_benchmark.py`
-3. Create rigorous scenarios in `examples/benchmarks/scenarios/`
-4. Test with: `python -m astk.cli rigorous run your_agent.py`
+1. **Fork the repository** and create a feature branch
+2. **Add new agents** in `examples/agents/`
+3. **Create new scenarios** in `examples/benchmarks/scenarios/`
+4. **Test thoroughly** with all evaluation tiers
+5. **Submit pull request** with comprehensive test results
 
 ## 📄 License
 
@@ -712,26 +563,23 @@ See LICENSE file for complete details.
 
 ---
 
-**🎯 Ready to benchmark your AI agents? Start with:**
+## 🚀 Get Started Now
 
 ```bash
-# Install globally
+# Quick installation and first test
 pip install agent-sprint-testkit[evals]
+export OPENAI_API_KEY="your-key"
+python -m astk.cli init my-tests
+cd my-tests
+python -m astk.cli examples
 
-# Quick benchmark
+# Run first evaluation
 python -m astk.cli benchmark examples/agents/file_qa_agent.py
 
-# Professional rigorous evaluation
-python -m astk.cli rigorous run examples/agents/file_qa_agent.py
-
-# Enterprise OpenAI Evals integration
-python -m astk.cli evals create my_agent.py --grader gpt-4
+# Try rigorous assessment
+python -m astk.cli rigorous run examples/agents/file_qa_agent.py --max-cost 3.0
 ```
 
-**🚀 Get started in 3 commands:**
+**Ready to evaluate your AI agent?** Start with basic testing and progress through our three-tier system as your agent improves!
 
-```bash
-pip install agent-sprint-testkit[evals]
-python -m astk.cli init my-tests
-python -m astk.cli rigorous run examples/agents/file_qa_agent.py
-```
+📚 **For package-specific installation and usage instructions, see [README-PACKAGE.md](README-PACKAGE.md)**

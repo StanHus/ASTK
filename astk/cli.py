@@ -18,14 +18,49 @@ import webbrowser
 @click.version_option(version="0.2.0")
 def cli():
     """
-    🚀 ASTK - AgentSprint TestKit
+    🚀 ASTK - AgentSprint TestKit v0.2.0
 
-    Professional AI agent evaluation and testing framework with OpenAI Evals integration.
+    Professional AI agent evaluation and testing framework with multi-tier assessment capabilities.
 
-    For reliable usage across all environments, use:
+    📊 AVAILABLE TESTING TIERS:
+
+    🟢 TIER 1 - BASIC TESTING (Quick Development)
+    • astk benchmark <agent>              - 12 intelligent scenarios (100% pass rate shown above)
+    • astk examples                       - Example agent implementations
+    • Fast feedback for development iterations
+
+    🟡 TIER 2 - PROFESSIONAL EVALUATION (Production Ready)  
+    • astk evals create <agent>           - OpenAI Evals integration
+    • astk evals run <eval_id>            - Professional grading system
+    • Industry-standard evaluation with detailed reports
+
+    🔴 TIER 3 - RIGOROUS MULTI-LAYER (Expert Assessment)
+    • astk rigorous run <agent>           - 9 expert-level scenarios
+    • Multiple OpenAI evaluators per scenario (GPT-4, O1-Preview)
+    • PhD-level challenges with 7.0+ pass thresholds
+    • Cost: ~$7-15 per full evaluation
+
+    💡 QUICK START EXAMPLES:
+      # Development testing (free, fast)
+      python -m astk.cli benchmark my_agent.py
+
+      # Professional evaluation (~$1-3)
+      python -m astk.cli evals create my_agent.py --eval-type code_qa
+
+      # Rigorous assessment (~$7-15) 
+      python -m astk.cli rigorous run my_agent.py --max-cost 10.0
+
+    📚 DOCUMENTATION:
+      README.md                    - Complete feature overview
+      RELIABLE_CLI_USAGE.md        - Cross-platform usage guide  
+      HOW_TO_RUN_RIGOROUS_EVALUATION.md - Expert evaluation guide
+
+    🔧 SETUP COMMANDS:
+      astk init <project>          - Initialize new agent project
+      astk report <results_dir>    - Generate HTML reports
+
+    For reliable usage across all environments, always use:
     python -m astk.cli <command>
-
-    See RELIABLE_CLI_USAGE.md for complete guidance.
     """
     pass
 
@@ -135,9 +170,76 @@ def report(results_dir: str):
 @cli.command()
 def examples():
     """
-    💡 Show example agent implementations
+    💡 Show testing examples and comprehensive tier guide
     """
-    click.echo("🤖 Example Agent Implementations:")
+    click.echo("🚀 ASTK Testing Tiers & Examples")
+    click.echo("=" * 50)
+    click.echo()
+
+    # Tier 1: Basic Testing
+    click.echo("🟢 TIER 1: BASIC TESTING (Development)")
+    click.echo("   Purpose: Quick feedback during development")
+    click.echo("   Cost: FREE")
+    click.echo("   Time: ~2-3 minutes")
+    click.echo("   Pass Rate: 80-100% (designed for success)")
+    click.echo()
+    click.echo("   Commands:")
+    click.echo("   python -m astk.cli benchmark my_agent.py")
+    click.echo("   python -m astk.cli benchmark my_agent.py --scenarios 5")
+    click.echo()
+
+    # Tier 2: Professional Evaluation
+    click.echo("🟡 TIER 2: PROFESSIONAL EVALUATION (Production)")
+    click.echo("   Purpose: Industry-standard assessment")
+    click.echo("   Cost: $1-5 per evaluation")
+    click.echo("   Time: ~5-10 minutes")
+    click.echo("   Pass Rate: 60-80% (professional standards)")
+    click.echo()
+    click.echo("   Commands:")
+    click.echo(
+        "   python -m astk.cli evals create my_agent.py --eval-type code_qa")
+    click.echo(
+        "   python -m astk.cli evals create my_agent.py --eval-type research")
+    click.echo("   python -m astk.cli evals run <eval_id>")
+    click.echo()
+
+    # Tier 3: Rigorous Multi-Layer
+    click.echo("🔴 TIER 3: RIGOROUS MULTI-LAYER (Expert)")
+    click.echo("   Purpose: Comprehensive expert-level assessment")
+    click.echo("   Cost: $7-15 per evaluation")
+    click.echo("   Time: ~10-20 minutes")
+    click.echo("   Pass Rate: 10-30% (PhD-level challenges)")
+    click.echo()
+    click.echo("   Commands:")
+    click.echo("   # Basic rigorous test")
+    click.echo("   python -m astk.cli rigorous run my_agent.py --max-cost 10.0")
+    click.echo()
+    click.echo("   # Development-friendly (lower cost)")
+    click.echo(
+        "   python -m astk.cli rigorous run my_agent.py --max-cost 3.0 --fail-fast")
+    click.echo()
+    click.echo("   # Full assessment (parallel)")
+    click.echo(
+        "   python -m astk.cli rigorous run my_agent.py --parallel --max-cost 20.0")
+    click.echo()
+
+    click.echo("🎯 RECOMMENDATION BY USE CASE:")
+    click.echo()
+
+    use_cases = {
+        "Daily Development": "🟢 Tier 1 - astk benchmark (free, fast feedback)",
+        "Pre-Production": "🟡 Tier 2 - astk evals (professional validation)",
+        "Research/Competition": "🔴 Tier 3 - astk rigorous (expert assessment)",
+        "CI/CD Pipeline": "🟢 Tier 1 + 🟡 Tier 2 (automated quality gates)",
+        "Academic Research": "🔴 Tier 3 (rigorous scientific evaluation)",
+        "Commercial Deployment": "🟡 Tier 2 → 🔴 Tier 3 (staged validation)"
+    }
+
+    for use_case, recommendation in use_cases.items():
+        click.echo(f"   {use_case}: {recommendation}")
+
+    click.echo()
+    click.echo("🤖 AGENT IMPLEMENTATION EXAMPLES:")
     click.echo()
 
     examples = {
@@ -145,12 +247,21 @@ def examples():
         "Python Class": "from my_agent import MyAgent; agent = MyAgent()",
         "REST API": "POST http://localhost:8000/chat {'message': 'query'}",
         "LangChain": "Use LangChain AgentExecutor pattern",
+        "OpenAI Function": "Use OpenAI function calling format"
     }
 
     for name, example in examples.items():
-        click.echo(f"📁 {name}:")
-        click.echo(f"   {example}")
+        click.echo(f"   📁 {name}:")
+        click.echo(f"      {example}")
         click.echo()
+
+    click.echo("📚 DOCUMENTATION:")
+    click.echo("   README.md - Complete overview and setup")
+    click.echo("   RELIABLE_CLI_USAGE.md - Cross-platform usage guide")
+    click.echo("   HOW_TO_RUN_RIGOROUS_EVALUATION.md - Expert evaluation guide")
+    click.echo()
+    click.echo(
+        "💡 TIP: Start with Tier 1, then progress to higher tiers as your agent improves!")
 
 
 # NEW: OpenAI Evals Integration Commands
@@ -817,7 +928,7 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
                 "total_cost_usd": total_cost,
                 "total_duration_ms": total_duration
             },
-            "results": [result.dict() for result in results],
+            "results": [result.model_dump() for result in results],
             "timestamp": end_time.isoformat()
         }
 
