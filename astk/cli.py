@@ -1059,15 +1059,15 @@ def _estimate_scenario_cost(evaluation_result: 'MultiLayerEvaluationResult', sce
     """Estimate the cost of running a scenario with multi-layer evaluation"""
 
     # Base cost for scenario execution
-    base_cost = 0.01
+    base_cost = 0.001
 
     # Cost per OpenAI evaluation (rough estimate)
     # GPT-4: ~$0.03/1K tokens, O1-preview: ~$0.15/1K tokens
     eval_costs = {
-        'gpt-4': 0.05,
-        'gpt-4-turbo': 0.04,
-        'o1-preview': 0.20,
-        'o1-mini': 0.10
+        'gpt-4': 0.005,
+        'gpt-4-turbo': 0.004,
+        'o1-preview': 0.020,
+        'o1-mini': 0.010
     }
 
     total_cost = base_cost
@@ -1077,7 +1077,7 @@ def _estimate_scenario_cost(evaluation_result: 'MultiLayerEvaluationResult', sce
         if evaluator in eval_costs:
             total_cost += eval_costs[evaluator]
         else:
-            total_cost += 0.05  # Default cost
+            total_cost += 0.005  # Default cost
 
     return total_cost
 

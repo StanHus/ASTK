@@ -150,7 +150,7 @@ python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
 python -m astk.cli evals run eval_12345
 
 # Compare two models
-python -m astk.cli evals compare eval_12345 gpt-4o-mini gpt-4-turbo
+python -m astk.cli evals compare eval_12345 gpt-4-mini gpt-4-turbo
 ```
 
 ## 📋 Complete CLI Reference
