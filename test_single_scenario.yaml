@@ -1,0 +1,35 @@
+scenarios:
+  - name: "test_evaluation_fix"
+    task: "simple_reasoning"
+    description: "Test scenario to verify evaluation system works with real scores"
+    difficulty: "intermediate"
+    category: "reasoning"
+    persona:
+      archetype: "analytical_thinker"
+      temperature: 0.3
+      traits:
+        - "methodical"
+        - "logical"
+    protocol: "A2A"
+    input_prompt: |
+      What is 2 + 2? Explain your reasoning step by step.
+
+    success:
+      regex: "(?i)(4|four|addition|plus)"
+      semantic_score: 0.8
+
+      openai_evaluations:
+        - evaluator: "gpt-3.5-turbo"
+          prompt: |
+            Evaluate this mathematical response:
+            1. Is the answer correct? (50%)
+            2. Is the reasoning clear? (30%)
+            3. Is the explanation appropriate? (20%)
+
+            Score 1-10 and return as JSON with "overall_score" field.
+          pass_threshold: 7.0
+
+    budgets:
+      latency_ms: 10000
+      cost_usd: 0.1
+      tokens: 500
