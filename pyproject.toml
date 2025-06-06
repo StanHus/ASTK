@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "agent-sprint-testkit"
 version = "0.2.0"
 description = "AgentSprint TestKit - Professional AI agent evaluation with OpenAI Evals integration"
-readme = "README-PACKAGE.md"
+readme = "docs/README-PACKAGE.md"
 license = {file = "LICENSE"}
 authors = [
     {name = "ASTK Team", email = "admin@blackbox-dev.com"}
