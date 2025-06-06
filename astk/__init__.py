@@ -1,9 +1,8 @@
 """
-ASTK - AgentSprint TestKit
-Professional AI agent evaluation and testing framework with OpenAI Evals integration
+AgentSprint TestKit (ASTK) - Professional AI Agent Evaluation
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __author__ = "ASTK Team"
 __email__ = "admin@blackbox-dev.com"
 

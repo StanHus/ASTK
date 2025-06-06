@@ -39,11 +39,11 @@ def test_budget_config_validation():
     # Valid config
     config = BudgetConfig(
         latency_ms=3000,
-        cost_usd=0.1,
+        cost_usd=0.01,
         tokens=1000
     )
     assert config.latency_ms == 3000
-    assert config.cost_usd == 0.1
+    assert config.cost_usd == 0.01
     assert config.tokens == 1000
 
     # All fields optional

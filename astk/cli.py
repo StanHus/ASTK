@@ -15,10 +15,10 @@ import webbrowser
 
 
 @click.group()
-@click.version_option(version="0.2.0")
+@click.version_option(version="0.3.0")
 def cli():
     """
-    🚀 ASTK - AgentSprint TestKit v0.2.0
+    🚀 ASTK - AgentSprint TestKit v0.3.0
 
     Professional AI agent evaluation and testing framework with multi-tier assessment capabilities.
 
@@ -301,6 +301,15 @@ def create(agent_path: str, grader: str, eval_type: str, scenarios: int, pass_th
     click.echo(f"🔍 Type: {eval_type}")
 
     try:
+        # Check for OpenAI API key first
+        if not os.getenv("OPENAI_API_KEY"):
+            click.echo("❌ OpenAI API key required for evaluation creation")
+            click.echo("💡 Set your API key:")
+            click.echo("   export OPENAI_API_KEY='your-api-key-here'")
+            click.echo(
+                "   # Get your key from: https://platform.openai.com/api-keys")
+            sys.exit(1)
+
         adapter = OpenAIEvalsAdapter()
 
         # Create sample scenarios based on eval type
@@ -318,6 +327,7 @@ def create(agent_path: str, grader: str, eval_type: str, scenarios: int, pass_th
 
     except Exception as e:
         click.echo(f"❌ Failed to create eval: {e}")
+        click.echo("💡 Ensure OPENAI_API_KEY is set and valid")
         sys.exit(1)
 
 
@@ -340,6 +350,15 @@ def run(eval_id: str, data_limit: int):
     click.echo(f"📊 Samples: {data_limit}")
 
     try:
+        # Check for OpenAI API key first
+        if not os.getenv("OPENAI_API_KEY"):
+            click.echo("❌ OpenAI API key required for running evaluations")
+            click.echo("💡 Set your API key:")
+            click.echo("   export OPENAI_API_KEY='your-api-key-here'")
+            click.echo(
+                "   # Get your key from: https://platform.openai.com/api-keys")
+            sys.exit(1)
+
         adapter = OpenAIEvalsAdapter()
         run_id = adapter.evaluate_from_logs(eval_id, days_back=7)
 
@@ -350,6 +369,7 @@ def run(eval_id: str, data_limit: int):
 
     except Exception as e:
         click.echo(f"❌ Failed to run evaluation: {e}")
+        click.echo("💡 Ensure OPENAI_API_KEY is set and valid")
         sys.exit(1)
 
 
@@ -376,6 +396,15 @@ def compare(eval_id: str, baseline_model: str, test_model: str, data_limit: int)
     click.echo(f"  📋 Eval: {eval_id}")
 
     try:
+        # Check for OpenAI API key first
+        if not os.getenv("OPENAI_API_KEY"):
+            click.echo("❌ OpenAI API key required for model comparison")
+            click.echo("💡 Set your API key:")
+            click.echo("   export OPENAI_API_KEY='your-api-key-here'")
+            click.echo(
+                "   # Get your key from: https://platform.openai.com/api-keys")
+            sys.exit(1)
+
         adapter = OpenAIEvalsAdapter()
         results = adapter.run_comparative_evaluation(
             eval_id=eval_id,
@@ -389,6 +418,7 @@ def compare(eval_id: str, baseline_model: str, test_model: str, data_limit: int)
 
     except Exception as e:
         click.echo(f"❌ Failed to run comparison: {e}")
+        click.echo("💡 Ensure OPENAI_API_KEY is set and valid")
         sys.exit(1)
 
 
@@ -759,10 +789,20 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
 
     # Initialize evaluation system
     try:
+        # Check for OpenAI API key first
+        if not os.getenv("OPENAI_API_KEY"):
+            click.echo("❌ OpenAI API key required for rigorous evaluation")
+            click.echo("💡 Set your API key:")
+            click.echo("   export OPENAI_API_KEY='your-api-key-here'")
+            click.echo(
+                "   # Get your key from: https://platform.openai.com/api-keys")
+            sys.exit(1)
+
         adapter = OpenAIEvalsAdapter()
         click.echo("✅ OpenAI Evals adapter initialized")
     except Exception as e:
         click.echo(f"❌ Failed to initialize OpenAI Evals: {e}")
+        click.echo("💡 Ensure OPENAI_API_KEY is set and valid")
         sys.exit(1)
 
     # Run evaluation

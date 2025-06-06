@@ -86,3 +86,9 @@ def test_package_all_exports():
     # But we shouldn't error if it's not there
     evals_available = hasattr(astk, 'OpenAIEvalsAdapter')
     print(f"OpenAI Evals integration available: {evals_available}")
+
+
+def test_version():
+    """Test that version is properly set"""
+    import astk
+    assert astk.__version__ == "0.3.0"

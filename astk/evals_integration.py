@@ -139,7 +139,7 @@ class OpenAIEvalsAdapter:
 
                     # Print warning for user visibility
                     print(
-                        f"⚠️  Warning: Evaluator {evaluator_name} failed: {str(e)[:100]}...")
+                        f"⚠️  Warning: Evaluator {evaluator_name} failed: {str(e)[:200]}...")
 
                     # If all evaluators are failing consistently, we might want to stop
                     # For now, continue to see which ones work
@@ -203,8 +203,8 @@ Please provide your evaluation as JSON in the following format:
                     {"role": "system", "content": "You are an expert evaluator providing detailed, objective assessment of AI responses."},
                     {"role": "user", "content": full_prompt}
                 ],
-                temperature=0.1,  # Low temperature for consistent evaluation
-                max_tokens=2000
+                # Low temperature for consistent evaluation
+                temperature=1 if evaluator_model == "o4-mini" else 0.1,
             )
 
             evaluation_text = response_obj.choices[0].message.content

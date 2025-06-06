@@ -11,7 +11,7 @@ success:
   semantic_score: 0.8
 budgets:
   latency_ms: 3000
-  cost_usd: 0.1
+  cost_usd: 0.01
   tokens: 1000
 chaos:
   drop_tool:

@@ -14,7 +14,7 @@ success:
     tests_pass: true
 budgets:
   latency_ms: 5000
-  cost_usd: 0.2
+  cost_usd: 0.02
   tokens: 2000
 chaos:
   drop_tool:
