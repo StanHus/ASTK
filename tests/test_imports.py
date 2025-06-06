@@ -7,7 +7,7 @@ import pytest
 def test_package_import():
     """Test that the package can be imported"""
     import astk
-    assert astk.__version__ == "0.1.2"
+    assert astk.__version__ == "0.1.3"
 
 
 def test_schema_imports():

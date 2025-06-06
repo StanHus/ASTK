@@ -2,7 +2,7 @@
 AgentSprint TestKit (ASTK) - A CI-first behavioural-coverage and regression-gating framework
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 # Import main classes for easier access
 try:

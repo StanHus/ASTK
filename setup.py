@@ -2,12 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="agent-sprint-testkit",
-    version="0.1.2",
+    version="0.1.3",
     description="AgentSprint TestKit - Benchmark your AI agents",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="ASTK Team",
-    author_email="stan@blackbox-dev.com",
+    author_email="admin@blackbox-dev.com",
     url="https://github.com/stanhus/ASTK",
     packages=find_packages(),
     classifiers=[

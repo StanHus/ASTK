@@ -10,3 +10,4 @@ ASTK_ARTICLE_CONTENT.txt
 .tar.gz
 .DS_Store
 .idea
+.pypirc

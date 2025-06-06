@@ -1,3 +1,4 @@
+LICENSE
 README-PACKAGE.md
 README.md
 pyproject.toml
@@ -22,4 +23,6 @@ astk/benchmarks/visualization.py
 scripts/__init__.py
 scripts/simple_benchmark.py
 scripts/simple_run.py
+tests/test_basic.py
+tests/test_imports.py
 tests/test_schema.py
