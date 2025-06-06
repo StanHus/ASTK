@@ -4,29 +4,31 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-sprint-testkit"
-version = "0.1.3"
-description = "AgentSprint TestKit - Universal AI agent benchmarking and testing framework"
+version = "0.2.0"
+description = "AgentSprint TestKit - Professional AI agent evaluation with OpenAI Evals integration"
 readme = "README-PACKAGE.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "ASTK Team", email = "team@astk.dev"}
+    {name = "ASTK Team", email = "admin@blackbox-dev.com"}
 ]
 maintainers = [
-    {name = "ASTK Team", email = "team@astk.dev"}
+    {name = "ASTK Team", email = "admin@blackbox-dev.com"}
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License", 
+    "License :: Other/Proprietary License", 
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Testing",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Operating System :: OS Independent",
 ]
-keywords = ["ai", "agent", "testing", "benchmark", "llm", "chatbot"]
-requires-python = ">=3.11"
+keywords = ["ai", "agent", "testing", "benchmark", "llm", "chatbot", "evaluation", "openai", "evals"]
+requires-python = ">=3.9"
 dependencies = [
     "langchain>=0.1.0",
     "langchain-openai>=0.0.2", 
@@ -46,6 +48,7 @@ dependencies = [
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
     "black>=23.0.0",
     "isort>=5.12.0",
     "mypy>=1.0.0",
@@ -55,20 +58,27 @@ dev = [
 docker = [
     "docker>=6.0.0",
 ]
+evals = [
+    "openai>=1.50.0",
+    "pandas>=2.0.0",
+    "plotly>=5.0.0",
+    "numpy>=1.24.0",
+]
 all = [
-    "astk[dev,docker]"
+    "astk[dev,docker,evals]"
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/astk"
-Documentation = "https://astk.readthedocs.io"
-Repository = "https://github.com/your-org/astk.git"
-Issues = "https://github.com/your-org/astk/issues"
-Changelog = "https://github.com/your-org/astk/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/stanhus/ASTK"
+Documentation = "https://github.com/stanhus/ASTK/blob/main/README.md"
+Repository = "https://github.com/stanhus/ASTK.git"
+Issues = "https://github.com/stanhus/ASTK/issues"
+Changelog = "https://github.com/stanhus/ASTK/blob/main/CHANGELOG.md"
 
 [project.scripts]
-astk = "astk.cli:cli"
-astk-benchmark = "scripts.simple_benchmark:main"
+astk = "astk.cli:main_wrapper"
+astk-benchmark = "astk.cli:benchmark_wrapper"
+astk-run = "astk.cli:run_wrapper"
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -80,7 +90,7 @@ astk = ["templates/*.yaml", "templates/*.py"]
 
 [tool.black]
 line-length = 88
-target-version = ['py311']
+target-version = ['py39', 'py310', 'py311', 'py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -100,7 +110,7 @@ multi_line_output = 3
 line_length = 88
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true 

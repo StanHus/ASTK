@@ -12,6 +12,7 @@ agent_sprint_testkit.egg-info/top_level.txt
 astk/__init__.py
 astk/chaos.py
 astk/cli.py
+astk/evals_integration.py
 astk/metrics.py
 astk/persona.py
 astk/runner.py

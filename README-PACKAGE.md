@@ -19,7 +19,7 @@ pip install agent-sprint-testkit
 **✅ Check it worked:**
 
 ```bash
-astk --help
+python -m astk.cli --help
 ```
 
 You should see a help menu. If you get an error, see [Troubleshooting](#troubleshooting) below.
@@ -46,9 +46,9 @@ set OPENAI_API_KEY=sk-your-key-here
 ASTK comes with a built-in example agent for testing:
 
 ```bash
-astk init my-first-test
+python -m astk.cli init my-first-test
 cd my-first-test
-astk benchmark examples/agents/file_qa_agent.py
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
 ```
 
 This will:
@@ -63,7 +63,7 @@ This will:
 If you have your own AI agent, you can test it:
 
 ```bash
-astk benchmark path/to/your-agent.py
+python -m astk.cli benchmark path/to/your-agent.py
 ```
 
 **Your agent must accept questions as command-line arguments:**
@@ -199,7 +199,7 @@ if __name__ == "__main__":
 **Test it:**
 
 ```bash
-astk benchmark my_bot.py
+python -m astk.cli benchmark my_bot.py
 ```
 
 ### Testing Different Agent Types
@@ -207,40 +207,40 @@ astk benchmark my_bot.py
 **CLI Agent (takes command line arguments):**
 
 ```bash
-astk benchmark my_cli_agent.py
+python -m astk.cli benchmark my_cli_agent.py
 ```
 
 **Python Module Agent (has a chat method):**
 
 ```bash
 # ASTK will automatically detect and use the chat() method
-astk benchmark my_module_agent.py
+python -m astk.cli benchmark my_module_agent.py
 ```
 
 **REST API Agent:**
 
 ```bash
 # ASTK will try to use the /chat endpoint
-astk benchmark http://localhost:8000
+python -m astk.cli benchmark http://localhost:8000
 ```
 
 ## 📋 All Available Commands
 
 ```bash
 # Initialize a new test project
-astk init <project-name>
+python -m astk.cli init <project-name>
 
 # Run benchmark tests
-astk benchmark <agent-path>
+python -m astk.cli benchmark <agent-path>
 
 # Generate detailed reports
-astk report <results-directory>
+python -m astk.cli report <results-directory>
 
 # Show examples and help
-astk examples
+python -m astk.cli examples
 
 # Show version
-astk --version
+python -m astk.cli --version
 ```
 
 ## 🔧 Troubleshooting
@@ -321,9 +321,9 @@ export PATH=$PATH:~/.local/bin
 ```bash
 pip install agent-sprint-testkit
 export OPENAI_API_KEY="your-key"
-astk init test-project
+python -m astk.cli init test-project
 cd test-project
-astk benchmark examples/agents/file_qa_agent.py
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
 ```
 
 ### 2. Test Your Own Agent
@@ -338,19 +338,19 @@ if len(sys.argv) > 1:
 chmod +x my_bot.py
 
 # Test it
-astk benchmark my_bot.py
+python -m astk.cli benchmark my_bot.py
 ```
 
 ### 3. Multiple Tests
 
 ```bash
 # Test different agents
-astk benchmark agent1.py
-astk benchmark agent2.py
-astk benchmark http://localhost:8000
+python -m astk.cli benchmark agent1.py
+python -m astk.cli benchmark agent2.py
+python -m astk.cli benchmark http://localhost:8000
 
 # Compare results
-astk report benchmark_results/
+python -m astk.cli report benchmark_results/
 ```
 
 ## 📈 Improving Your Agent
@@ -373,8 +373,8 @@ Based on ASTK results, you can improve your agent:
 
 1. **Install ASTK**: `pip install agent-sprint-testkit`
 2. **Set API key**: `export OPENAI_API_KEY="your-key"`
-3. **Run first test**: `astk init test && cd test && astk examples`
-4. **Test your agent**: `astk benchmark your-agent.py`
+3. **Run first test**: `python -m astk.cli init test && cd test && python -m astk.cli examples`
+4. **Test your agent**: `python -m astk.cli benchmark your-agent.py`
 5. **Review results** and improve your agent!
 
 ---
@@ -382,7 +382,7 @@ Based on ASTK results, you can improve your agent:
 **🎯 Ready to test your AI agent?**
 
 ```bash
-pip install agent-sprint-testkit && astk --help
+pip install agent-sprint-testkit && python -m astk.cli --help
 ```
 
 **Need help?** Check the [main documentation](README.md) or [open an issue](https://github.com/your-org/astk/issues).

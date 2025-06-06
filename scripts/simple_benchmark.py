@@ -12,6 +12,7 @@ Usage:
 
 Example:
     python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
+    python -m astk.cli benchmark examples/agents/file_qa_agent.py
 """
 
 import asyncio
@@ -325,8 +326,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    astk examples/agents/file_qa_agent.py
-    astk-benchmark examples/agents/file_qa_agent.py
+    python -m astk.cli benchmark examples/agents/file_qa_agent.py
+    python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
     
 The benchmark runs 12 sophisticated scenarios across multiple categories:
 

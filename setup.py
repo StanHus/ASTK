@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="agent-sprint-testkit",
-    version="0.1.3",
-    description="AgentSprint TestKit - Benchmark your AI agents",
+    name="at",
+    version="0.2.0",
+    description="AgentSprint TestKit - Professional AI agent evaluation with OpenAI Evals integration",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="ASTK Team",
@@ -11,7 +11,7 @@ setup(
     url="https://github.com/stanhus/ASTK",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: Other/Proprietary License",
         "Programming Language :: Python :: 3",
@@ -49,6 +49,12 @@ setup(
         ],
         "docker": [
             "docker>=6.0.0",
+        ],
+        "evals": [
+            "openai>=1.50.0",
+            "pandas>=2.0.0",
+            "plotly>=5.0.0",
+            "numpy>=1.24.0",
         ],
     },
     entry_points={

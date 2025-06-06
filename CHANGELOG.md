@@ -19,9 +19,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## [0.1.3] - 2024-12-28
+## [0.2.0] - 2024-12-28
 
-### Fixed
+### 🎯 Major Features
+
+- **OpenAI Evals API Integration**: Professional-grade agent evaluation using OpenAI's infrastructure
+- **New CLI Commands**: `astk evals create`, `astk evals run`, `astk evals compare`
+- **Professional Grader Prompts**: Expert-level evaluation for 4 agent types (general, code_qa, customer_service, research)
+- **Comparative Analysis**: A/B testing between different models with detailed scoring
+- **Beta Status**: Package promoted to Beta (Development Status 4)
+
+### ✨ New Features
+
+- Professional AI-powered grading with detailed explanations
+- Logs-based evaluation for cost-effective testing
+- Industry-standard evaluation methodology
+- Enhanced CLI with evals integration
+- Comprehensive examples and documentation
+
+### 🔧 Improvements
+
+- Fixed CLI benchmark command import issues
+- Enhanced package description and metadata
+- Updated development status to Beta
+- Improved error handling and user feedback
+
+### 📦 Dependencies
+
+- Added optional `evals` dependency group: `openai>=1.50.0`, `pandas>=2.0.0`, `plotly>=5.0.0`
+- Maintained backward compatibility with existing installations
+
+### 📚 Documentation
+
+- Added `OPENAI_EVALS_INTEGRATION.md` with comprehensive integration guide
+- Added `EVALS_TRANSFORMATION_SUMMARY.md` with business impact analysis
+- Updated README with OpenAI Evals examples and usage
+- Added `examples/evals_example.py` with working integration demo
+
+### 🚀 Breaking Changes
+
+- None - Full backward compatibility maintained
+
+## [0.1.3] - 2024-12-27
+
+### 🔧 Bug Fixes
 
 - **CI/CD Issues**: Resolved all test failures in GitHub Actions workflows
 - **Dependencies**: Added missing `pyyaml>=6.0.0` dependency for YAML parsing

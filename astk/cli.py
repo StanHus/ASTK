@@ -14,12 +14,17 @@ import webbrowser
 
 
 @click.group()
-@click.version_option(version="0.1.3")
+@click.version_option(version="0.2.0")
 def cli():
     """
     🚀 ASTK - AgentSprint TestKit
 
-    Universal AI agent benchmarking and testing framework.
+    Professional AI agent evaluation and testing framework with OpenAI Evals integration.
+
+    For reliable usage across all environments, use:
+    python -m astk.cli <command>
+
+    See RELIABLE_CLI_USAGE.md for complete guidance.
     """
     pass
 
@@ -39,26 +44,32 @@ def benchmark(agent_path: str, scenarios: int, timeout: int, results_dir: str, o
     - http://localhost:8000/chat (REST API)
     - my_module.MyAgent (Python class)
     """
-    from scripts.simple_benchmark import run_benchmark_cli
+    import subprocess
+    from pathlib import Path
 
     click.echo(f"🚀 ASTK Benchmark Starting...")
     click.echo(f"Agent: {agent_path}")
-    click.echo(f"Scenarios: {scenarios}")
     click.echo(f"Results: {results_dir}")
 
-    # Run the benchmark
-    success = run_benchmark_cli(
-        agent_path=agent_path,
-        scenarios=scenarios,
-        timeout=timeout,
-        results_dir=results_dir,
-        output_format=output_format
-    )
+    # Run the benchmark script directly
+    script_path = Path(__file__).parent.parent / \
+        "scripts" / "simple_benchmark.py"
 
-    if success:
+    try:
+        # Pass arguments in the correct order: agent_path --results-dir results_dir
+        result = subprocess.run([
+            sys.executable, str(
+                script_path), agent_path, "--results-dir", results_dir
+        ], check=True)
+
         click.echo("✅ Benchmark completed successfully!")
-    else:
+
+    except subprocess.CalledProcessError:
         click.echo("❌ Benchmark failed!")
+        sys.exit(1)
+    except FileNotFoundError:
+        click.echo("❌ Benchmark script not found!")
+        click.echo("💡 Try running directly: python scripts/simple_benchmark.py")
         sys.exit(1)
 
 
@@ -92,7 +103,7 @@ def init(project_name: Optional[str], template: str):
     click.echo("✅ Project initialized!")
     click.echo(f"\nNext steps:")
     click.echo(f"  cd {project_name}")
-    click.echo(f"  astk benchmark agents/my_agent.py")
+    click.echo(f"  python -m astk.cli benchmark agents/my_agent.py")
 
 
 @cli.command()
@@ -139,6 +150,179 @@ def examples():
         click.echo(f"📁 {name}:")
         click.echo(f"   {example}")
         click.echo()
+
+
+# NEW: OpenAI Evals Integration Commands
+@cli.group()
+def evals():
+    """
+    🎯 OpenAI Evals API integration commands (Beta)
+
+    Professional-grade agent evaluation using OpenAI's Evals infrastructure.
+    Requires: pip install openai>=1.50.0
+    """
+    pass
+
+
+@evals.command()
+@click.argument('agent_path')
+@click.option('--grader', default='gpt-4', type=click.Choice(['gpt-4', 'gpt-4-turbo', 'o3', 'o3-mini']))
+@click.option('--eval-type', default='general', type=click.Choice(['general', 'code_qa', 'customer_service', 'research']))
+@click.option('--scenarios', default=10, help='Number of test scenarios')
+@click.option('--pass-threshold', default=6.0, type=float, help='Minimum score to pass (1-10)')
+def create(agent_path: str, grader: str, eval_type: str, scenarios: int, pass_threshold: float):
+    """
+    🎯 Create a new OpenAI Eval for your agent
+
+    This creates a professional evaluation using OpenAI's infrastructure.
+    """
+    try:
+        from .evals_integration import OpenAIEvalsAdapter
+        from .schema import ScenarioConfig, PersonaConfig, SuccessCriteria
+    except ImportError as e:
+        click.echo(f"❌ OpenAI Evals integration not available: {e}")
+        click.echo("💡 Install with: pip install openai>=1.50.0")
+        sys.exit(1)
+
+    click.echo(f"🎯 Creating OpenAI Eval for: {agent_path}")
+    click.echo(f"📊 Grader: {grader}")
+    click.echo(f"🔍 Type: {eval_type}")
+
+    try:
+        adapter = OpenAIEvalsAdapter()
+
+        # Create sample scenarios based on eval type
+        test_scenarios = generate_test_scenarios(eval_type, scenarios)
+
+        eval_id = adapter.create_eval_from_scenarios(
+            scenarios=test_scenarios,
+            eval_name=f"ASTK-{eval_type}-{agent_path}",
+            grader_model=grader
+        )
+
+        click.echo(f"✅ Eval created successfully!")
+        click.echo(f"📋 Eval ID: {eval_id}")
+        click.echo(f"🚀 Run with: python -m astk.cli evals run {eval_id}")
+
+    except Exception as e:
+        click.echo(f"❌ Failed to create eval: {e}")
+        sys.exit(1)
+
+
+@evals.command()
+@click.argument('eval_id')
+@click.option('--data-limit', default=50, help='Number of samples to evaluate')
+def run(eval_id: str, data_limit: int):
+    """
+    🚀 Run an evaluation using logged responses
+
+    This evaluates your agent based on recent logs.
+    """
+    try:
+        from .evals_integration import OpenAIEvalsAdapter
+    except ImportError as e:
+        click.echo(f"❌ OpenAI Evals integration not available: {e}")
+        sys.exit(1)
+
+    click.echo(f"🚀 Running evaluation: {eval_id}")
+    click.echo(f"📊 Samples: {data_limit}")
+
+    try:
+        adapter = OpenAIEvalsAdapter()
+        run_id = adapter.evaluate_from_logs(eval_id, days_back=7)
+
+        click.echo(f"✅ Evaluation started!")
+        click.echo(f"🔗 Run ID: {run_id}")
+        click.echo(
+            f"📊 View results at: https://platform.openai.com/evals/runs/{run_id}")
+
+    except Exception as e:
+        click.echo(f"❌ Failed to run evaluation: {e}")
+        sys.exit(1)
+
+
+@evals.command()
+@click.argument('eval_id')
+@click.argument('baseline_model')
+@click.argument('test_model')
+@click.option('--data-limit', default=30, help='Number of samples to compare')
+def compare(eval_id: str, baseline_model: str, test_model: str, data_limit: int):
+    """
+    ⚖️ Compare two models using the same evaluation
+
+    This runs A/B testing between two different models.
+    """
+    try:
+        from .evals_integration import OpenAIEvalsAdapter
+    except ImportError as e:
+        click.echo(f"❌ OpenAI Evals integration not available: {e}")
+        sys.exit(1)
+
+    click.echo(f"⚖️ Comparing models:")
+    click.echo(f"  📊 Baseline: {baseline_model}")
+    click.echo(f"  🆚 Test: {test_model}")
+    click.echo(f"  📋 Eval: {eval_id}")
+
+    try:
+        adapter = OpenAIEvalsAdapter()
+        results = adapter.run_comparative_evaluation(
+            eval_id=eval_id,
+            baseline_model=baseline_model,
+            test_model=test_model,
+            data_limit=data_limit
+        )
+
+        click.echo(f"✅ Comparison started!")
+        click.echo(f"🔗 View results: {results['comparison_url']}")
+
+    except Exception as e:
+        click.echo(f"❌ Failed to run comparison: {e}")
+        sys.exit(1)
+
+
+def generate_test_scenarios(eval_type: str, count: int):
+    """Generate test scenarios based on evaluation type"""
+    from .schema import ScenarioConfig, PersonaConfig, SuccessCriteria
+
+    # Sample scenarios for different types
+    scenario_templates = {
+        "code_qa": [
+            {"task": "explain_function", "query": "What does this function do?"},
+            {"task": "debug_code", "query": "Find the bug in this code"},
+            {"task": "optimize_code", "query": "How can this code be improved?"},
+        ],
+        "customer_service": [
+            {"task": "product_inquiry", "query": "Tell me about your product features"},
+            {"task": "billing_issue", "query": "I have a question about my bill"},
+            {"task": "technical_support", "query": "I'm having trouble with the app"},
+        ],
+        "research": [
+            {"task": "market_analysis", "query": "Analyze the current market trends"},
+            {"task": "competitive_research",
+                "query": "Who are our main competitors?"},
+            {"task": "data_synthesis", "query": "Summarize these research findings"},
+        ],
+        "general": [
+            {"task": "general_query", "query": "Help me understand this topic"},
+            {"task": "problem_solving", "query": "How would you approach this problem?"},
+            {"task": "explanation", "query": "Explain this concept clearly"},
+        ]
+    }
+
+    templates = scenario_templates.get(
+        eval_type, scenario_templates["general"])
+    scenarios = []
+
+    for i in range(count):
+        template = templates[i % len(templates)]
+        scenarios.append(ScenarioConfig(
+            task=template["task"],
+            persona=PersonaConfig(archetype="professional_user"),
+            protocol="A2A",
+            success=SuccessCriteria(semantic_score=0.7)
+        ))
+
+    return scenarios
 
 
 def create_template_files(project_path: Path, template: str):
@@ -295,13 +479,13 @@ def main_wrapper():
         print("Sophisticated AI Agent Benchmarking")
         print()
         print("Usage:")
-        print("  astk <agent_path>              - Run sophisticated benchmark")
-        print("  astk-benchmark <agent_path>    - Same as above")
-        print("  astk-run <agent_path>          - Run agent directly")
+        print("  python -m astk.cli benchmark <agent_path>  - Run sophisticated benchmark")
+        print("  python -m astk.cli examples               - Show usage examples")
+        print("  python -m astk.cli init <project>         - Initialize new project")
         print()
         print("Examples:")
-        print("  astk examples/agents/file_qa_agent.py")
-        print("  astk-benchmark my_agent.py --results-dir results/")
+        print("  python -m astk.cli benchmark examples/agents/file_qa_agent.py")
+        print("  python -m astk.cli benchmark my_agent.py --results-dir results/")
         print()
         print("Features:")
         print("  📊 12 sophisticated scenarios across multiple categories")

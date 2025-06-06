@@ -1,11 +1,11 @@
 Metadata-Version: 2.4
 Name: agent-sprint-testkit
-Version: 0.1.3
-Summary: AgentSprint TestKit - Universal AI agent benchmarking and testing framework
+Version: 0.2.0
+Summary: AgentSprint TestKit - Professional AI agent evaluation with OpenAI Evals integration
 Home-page: https://github.com/stanhus/ASTK
 Author: ASTK Team
-Author-email: ASTK Team <team@astk.dev>
-Maintainer-email: ASTK Team <team@astk.dev>
+Author-email: ASTK Team <admin@blackbox-dev.com>
+Maintainer-email: ASTK Team <admin@blackbox-dev.com>
 License: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
         
         Copyright (c) 2024 Stan Hus
@@ -39,16 +39,18 @@ License: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 Internatio
         
         For more information about ASTK, visit: https://github.com/stanhus/ASTK
         
-Project-URL: Homepage, https://github.com/your-org/astk
-Project-URL: Documentation, https://astk.readthedocs.io
-Project-URL: Repository, https://github.com/your-org/astk.git
-Project-URL: Issues, https://github.com/your-org/astk/issues
-Project-URL: Changelog, https://github.com/your-org/astk/blob/main/CHANGELOG.md
-Keywords: ai,agent,testing,benchmark,llm,chatbot
-Classifier: Development Status :: 3 - Alpha
+Project-URL: Homepage, https://github.com/stanhus/ASTK
+Project-URL: Documentation, https://github.com/stanhus/ASTK/blob/main/README.md
+Project-URL: Repository, https://github.com/stanhus/ASTK.git
+Project-URL: Issues, https://github.com/stanhus/ASTK/issues
+Project-URL: Changelog, https://github.com/stanhus/ASTK/blob/main/CHANGELOG.md
+Keywords: ai,agent,testing,benchmark,llm,chatbot,evaluation,openai,evals
+Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Developers
-Classifier: License :: OSI Approved :: Apache Software License
+Classifier: License :: Other/Proprietary License
 Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
 Classifier: Topic :: Software Development :: Testing
@@ -72,6 +74,7 @@ Requires-Dist: pyyaml>=6.0.0
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0.0; extra == "dev"
 Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
 Requires-Dist: black>=23.0.0; extra == "dev"
 Requires-Dist: isort>=5.12.0; extra == "dev"
 Requires-Dist: mypy>=1.0.0; extra == "dev"
@@ -79,8 +82,13 @@ Requires-Dist: build>=0.10.0; extra == "dev"
 Requires-Dist: twine>=4.0.0; extra == "dev"
 Provides-Extra: docker
 Requires-Dist: docker>=6.0.0; extra == "docker"
+Provides-Extra: evals
+Requires-Dist: openai>=1.50.0; extra == "evals"
+Requires-Dist: pandas>=2.0.0; extra == "evals"
+Requires-Dist: plotly>=5.0.0; extra == "evals"
+Requires-Dist: numpy>=1.24.0; extra == "evals"
 Provides-Extra: all
-Requires-Dist: astk[dev,docker]; extra == "all"
+Requires-Dist: astk[dev,docker,evals]; extra == "all"
 Dynamic: author
 Dynamic: home-page
 Dynamic: license-file

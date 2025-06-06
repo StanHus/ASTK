@@ -5,6 +5,7 @@
 ASTK is a comprehensive testing framework for AI agents that evaluates performance, intelligence, and capabilities through diverse scenarios. Test your agents against real-world tasks like file analysis, code comprehension, and complex reasoning.
 
 ## Usage Example
+
 Please see https://github.com/StanHus/astk-test
 
 ## 🎯 Features
@@ -16,19 +17,24 @@ Please see https://github.com/StanHus/astk-test
 - **🤖 Agent Ready**: Compatible with LangChain, OpenAI, and custom agents
 - **📁 Built-in Examples**: File Q&A agent and project templates
 - **⚙️ GitHub Actions**: Ready-to-use CI/CD workflow templates
+- **🎯 OpenAI Evals Integration**: Professional-grade evaluation using OpenAI's infrastructure (Beta)
 
 ## 📋 Quick Start
 
 ### 1. Install from PyPI
 
 ```bash
+# Standard installation
 pip install agent-sprint-testkit
+
+# With OpenAI Evals support (Beta)
+pip install agent-sprint-testkit[evals]
 ```
 
 ### 2. Verify Installation
 
 ```bash
-astk --help
+python -m astk.cli --help
 ```
 
 ### 3. Set API Key
@@ -40,18 +46,18 @@ export OPENAI_API_KEY="your-api-key-here"
 ### 4. Initialize a Project
 
 ```bash
-astk init my-agent-tests
+python -m astk.cli init my-agent-tests
 cd my-agent-tests
 ```
 
 ### 5. Run Your First Benchmark
 
 ```bash
-# Benchmark an example agent
-astk benchmark examples/agents/file_qa_agent.py
+# Traditional ASTK benchmark
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
 
-# Or run directly from your project
-python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
+# NEW: Professional evaluation with OpenAI Evals (Beta)
+python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
 ```
 
 ## 🚀 Installation Options
@@ -59,8 +65,11 @@ python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
 ### Option 1: Global Installation (Recommended)
 
 ```bash
+# Standard installation
 pip install agent-sprint-testkit
-astk --version
+
+# With all optional features
+pip install agent-sprint-testkit[evals,dev,docker]
 ```
 
 ### Option 2: Development Setup
@@ -75,7 +84,7 @@ python3.11 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install in development mode
-pip install -e .
+pip install -e .[evals,dev]
 ```
 
 ## 💻 CLI Commands
@@ -84,16 +93,32 @@ pip install -e .
 
 ```bash
 # Initialize new project with templates
-astk init <project-name>
+python -m astk.cli init <project-name>
 
 # Run intelligent benchmarks
-astk benchmark <agent-path>
+python -m astk.cli benchmark <agent-path>
 
 # Generate detailed reports
-astk report <results-dir>
+python -m astk.cli report <results-dir>
 
 # Show example usage
-astk examples
+python -m astk.cli examples
+```
+
+### 🎯 OpenAI Evals Integration (Beta)
+
+```bash
+# Create professional evaluation
+python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
+
+# Run evaluation from logs
+python -m astk.cli evals run <eval-id>
+
+# Compare two models
+python -m astk.cli evals compare <eval-id> gpt-4o-mini gpt-4-turbo
+
+# Available eval types: general, code_qa, customer_service, research
+# Available graders: gpt-4, gpt-4-turbo, o3, o3-mini
 ```
 
 ### Legacy Script Commands (still supported)
@@ -104,6 +129,66 @@ python scripts/simple_benchmark.py <agent-path>
 
 # Quick agent runner
 python scripts/simple_run.py <agent-path>
+```
+
+## 🎯 OpenAI Evals Integration (Beta)
+
+ASTK now integrates with OpenAI's professional Evals API for enterprise-grade agent evaluation:
+
+### ✨ Key Benefits
+
+- **🏆 Professional-grade evaluation** using OpenAI's infrastructure
+- **🎯 AI-powered grading** with detailed scoring explanations
+- **⚖️ Easy A/B testing** between agent versions
+- **📊 Comparative analysis** with industry benchmarks
+- **💰 Cost-effective** by leveraging existing logs
+
+### 🛠️ Quick Start with Evals
+
+```bash
+# 1. Install with Evals support
+pip install agent-sprint-testkit[evals]
+
+# 2. Set up OpenAI API key
+export OPENAI_API_KEY=your_key_here
+
+# 3. Create evaluation for your agent
+python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4
+
+# 4. Run evaluation
+python -m astk.cli evals run eval_12345
+
+# 5. View results in OpenAI dashboard
+```
+
+### 📊 Evaluation Types
+
+| Type               | Description                 | Use Case                         |
+| ------------------ | --------------------------- | -------------------------------- |
+| `general`          | General-purpose evaluation  | All-around agent testing         |
+| `code_qa`          | Code analysis and Q&A       | Developer tools, code assistants |
+| `customer_service` | Customer support scenarios  | Support bots, help systems       |
+| `research`         | Research and analysis tasks | Research assistants, analysts    |
+
+### 🎓 Example Usage
+
+```python
+# Create and run evaluation programmatically
+from astk.evals_integration import OpenAIEvalsAdapter
+
+adapter = OpenAIEvalsAdapter()
+eval_id = adapter.create_eval_from_scenarios(
+    scenarios=my_scenarios,
+    eval_name="My Agent Evaluation",
+    grader_model="gpt-4"
+)
+
+# Run comparative evaluation
+results = adapter.run_comparative_evaluation(
+    eval_id=eval_id,
+    baseline_model="gpt-4o-mini",
+    test_model="gpt-4-turbo"
+)
 ```
 
 ## 🤖 Available Agents
@@ -172,16 +257,16 @@ Benchmarks generate comprehensive results:
 
 ```bash
 # Initialize project with templates
-astk init my-project
+python -m astk.cli init my-project
 
 # Run intelligent benchmarks
-astk benchmark <agent-path>
+python -m astk.cli benchmark <agent-path>
 
 # Generate HTML/JSON reports
-astk report <results-dir>
+python -m astk.cli report <results-dir>
 
 # View usage examples
-astk examples
+python -m astk.cli examples
 ```
 
 ### 🧪 Legacy Script Runners (Still Supported)
@@ -251,9 +336,23 @@ pip install --upgrade pip
 pip install --upgrade agent-sprint-testkit
 
 # Verify installation
-astk --version
-which astk
+python -m astk.cli --version
+python -c "import astk; print('ASTK loaded successfully')"
 ```
+
+**🛠️ CLI Command Issues**
+
+For 100% reliable CLI usage that works across all environments:
+
+```bash
+# Always use this format (recommended)
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
+
+# Instead of this (may fail with PATH issues)
+astk benchmark examples/agents/file_qa_agent.py
+```
+
+📖 **See [RELIABLE_CLI_USAGE.md](RELIABLE_CLI_USAGE.md) for complete CLI guidance**
 
 **🔑 OpenAI API Issues**
 
@@ -339,7 +438,7 @@ Apache 2.0 License - See LICENSE file for details.
 pip install agent-sprint-testkit
 
 # Run your first benchmark
-astk benchmark examples/agents/file_qa_agent.py
+python -m astk.cli benchmark examples/agents/file_qa_agent.py
 
 # Or use the legacy script
 python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
@@ -349,6 +448,6 @@ python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
 
 ```bash
 pip install agent-sprint-testkit
-astk init my-tests
-astk examples
+python -m astk.cli init my-tests
+python -m astk.cli examples
 ```

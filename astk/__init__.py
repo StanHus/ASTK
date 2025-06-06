@@ -1,14 +1,22 @@
 """
-AgentSprint TestKit (ASTK) - A CI-first behavioural-coverage and regression-gating framework
+ASTK - AgentSprint TestKit
+Professional AI agent evaluation and testing framework with OpenAI Evals integration
 """
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
+__author__ = "ASTK Team"
+__email__ = "admin@blackbox-dev.com"
 
-# Import main classes for easier access
+from .schema import (
+    ScenarioConfig,
+    PersonaConfig,
+    SuccessCriteria
+)
+
+# Optional OpenAI Evals integration
 try:
-    from .schema import ScenarioConfig, PersonaConfig, SuccessCriteria
-    from .metrics import QualityMetrics
-    from .runner import AgentRunner
+    from .evals_integration import OpenAIEvalsAdapter
+    __all__ = ["ScenarioConfig", "PersonaConfig",
+               "SuccessCriteria", "OpenAIEvalsAdapter"]
 except ImportError:
-    # Allow package to be imported even if dependencies aren't installed
-    pass
+    __all__ = ["ScenarioConfig", "PersonaConfig", "SuccessCriteria"]
