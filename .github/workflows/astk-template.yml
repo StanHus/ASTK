@@ -1,0 +1,142 @@
+name: ASTK Agent Benchmark
+
+on:
+  workflow_call:
+    inputs:
+      agent-path:
+        description: "Path to agent script"
+        required: true
+        type: string
+      scenarios:
+        description: "Number of test scenarios"
+        required: false
+        type: number
+        default: 8
+      timeout:
+        description: "Timeout per scenario (seconds)"
+        required: false
+        type: number
+        default: 45
+      python-version:
+        description: "Python version to use"
+        required: false
+        type: string
+        default: "3.11"
+    secrets:
+      OPENAI_API_KEY:
+        description: "OpenAI API key for agent testing"
+        required: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install ASTK
+        run: |
+          pip install astk
+
+      - name: Install project dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f setup.py ]; then pip install -e .; fi
+
+      - name: Verify agent exists
+        run: |
+          if [ ! -f "${{ inputs.agent-path }}" ]; then
+            echo "❌ Agent file not found: ${{ inputs.agent-path }}"
+            exit 1
+          fi
+          echo "✅ Agent found: ${{ inputs.agent-path }}"
+
+      - name: Run ASTK Benchmarks
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          astk benchmark "${{ inputs.agent-path }}" \
+            --scenarios ${{ inputs.scenarios }} \
+            --timeout ${{ inputs.timeout }} \
+            --results-dir astk_results \
+            --format json
+
+      - name: Generate Report
+        run: |
+          astk report astk_results
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: astk-benchmark-results
+          path: astk_results/
+          retention-days: 30
+
+      - name: Comment PR with Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Find latest results file
+            const resultsDir = 'astk_results';
+            const files = fs.readdirSync(resultsDir);
+            const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+            if (jsonFiles.length === 0) {
+              console.log('No results files found');
+              return;
+            }
+
+            const latestFile = jsonFiles.sort().pop();
+            const resultsPath = path.join(resultsDir, latestFile);
+            const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+
+            // Create comment body
+            const successRate = (results.success_rate * 100).toFixed(1);
+            const avgTime = results.average_scenario_duration.toFixed(2);
+            const totalTime = results.total_duration_seconds.toFixed(2);
+
+            const comment = `## 🚀 ASTK Benchmark Results
+
+            **Agent:** \`${{ inputs.agent-path }}\`
+
+            ### 📊 Summary
+            - ✅ **Success Rate:** ${successRate}%
+            - ⏱️ **Average Response Time:** ${avgTime}s
+            - 🕐 **Total Time:** ${totalTime}s
+            - 🧪 **Scenarios:** ${results.total_scenarios}
+
+            ### 🎯 Scenario Results
+            ${results.scenarios.map(s => 
+              `- ${s.success ? '✅' : '❌'} **${s.scenario.replace(/_/g, ' ')}** (${s.duration_seconds.toFixed(2)}s)`
+            ).join('\n')}
+
+            ${results.scenarios.some(s => !s.success) ? 
+              '\n⚠️ Some scenarios failed. Check the full results for details.' : 
+              '\n🎉 All scenarios passed!'
+            }
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

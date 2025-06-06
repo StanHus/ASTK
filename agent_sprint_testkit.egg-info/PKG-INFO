@@ -1,6 +1,59 @@
+Metadata-Version: 2.4
+Name: agent-sprint-testkit
+Version: 0.1.0
+Summary: AgentSprint TestKit - Universal AI agent benchmarking and testing framework
+Home-page: https://github.com/your-org/astk
+Author: ASTK Team
+Author-email: ASTK Team <team@astk.dev>
+Maintainer-email: ASTK Team <team@astk.dev>
+Project-URL: Homepage, https://github.com/your-org/astk
+Project-URL: Documentation, https://astk.readthedocs.io
+Project-URL: Repository, https://github.com/your-org/astk.git
+Project-URL: Issues, https://github.com/your-org/astk/issues
+Project-URL: Changelog, https://github.com/your-org/astk/blob/main/CHANGELOG.md
+Keywords: ai,agent,testing,benchmark,llm,chatbot
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: langchain>=0.1.0
+Requires-Dist: langchain-openai>=0.0.2
+Requires-Dist: langchain-core>=0.1.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: opentelemetry-api>=1.20.0
+Requires-Dist: opentelemetry-sdk>=1.20.0
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: requests>=2.28.0
+Requires-Dist: aiohttp>=3.8.0
+Requires-Dist: pyyaml>=6.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: build>=0.10.0; extra == "dev"
+Requires-Dist: twine>=4.0.0; extra == "dev"
+Provides-Extra: docker
+Requires-Dist: docker>=6.0.0; extra == "docker"
+Provides-Extra: all
+Requires-Dist: astk[dev,docker]; extra == "all"
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
 # AgentSprint TestKit (ASTK) 🚀
 
-> Universal AI agent benchmarking and testing framework
+> Benchmark your AI agents with intelligent, diverse test scenarios
 
 ASTK is a comprehensive testing framework for AI agents that evaluates performance, intelligence, and capabilities through diverse scenarios. Test your agents against real-world tasks like file analysis, code comprehension, and complex reasoning.
 
@@ -8,24 +61,29 @@ ASTK is a comprehensive testing framework for AI agents that evaluates performan
 
 - **🧠 Intelligent Benchmarks**: 8 diverse scenarios testing different AI capabilities
 - **📊 Performance Metrics**: Response time, success rate, and quality analysis
-- **🔧 Easy Installation**: Simple pip install from PyPI
-- **🌐 Universal Testing**: Works with CLI agents, REST APIs, Python modules, and more
-- **🤖 Agent Ready**: Compatible with LangChain, OpenAI, and custom agents
-- **📁 Built-in Examples**: File Q&A agent and project templates
-- **⚙️ GitHub Actions**: Ready-to-use CI/CD workflow templates
+- **🔧 Easy Setup**: Simple Python environment with minimal dependencies
+- **🤖 Agent Ready**: Works with LangChain, OpenAI, and custom agents
+- **📁 File Q&A Agent**: Built-in example agent for testing
 
 ## 📋 Quick Start
 
-### 1. Install from PyPI
+### 1. Prerequisites
+
+- Python 3.11+
+- OpenAI API Key
+
+### 2. Setup Environment
 
 ```bash
-pip install agent-sprint-testkit
-```
+# Clone/navigate to ASTK directory
+cd /path/to/ASTK
 
-### 2. Verify Installation
+# Create and activate virtual environment
+python3.11 -m venv .venv311
+source .venv311/bin/activate  # On Windows: .venv311\Scripts\activate
 
-```bash
-astk --help
+# Install dependencies
+pip install langchain langchain-openai langchain-core pydantic click psutil
 ```
 
 ### 3. Set API Key
@@ -34,73 +92,11 @@ astk --help
 export OPENAI_API_KEY="your-api-key-here"
 ```
 
-### 4. Initialize a Project
+### 4. Run Your First Benchmark
 
 ```bash
-astk init my-agent-tests
-cd my-agent-tests
-```
-
-### 5. Run Your First Benchmark
-
-```bash
-# Benchmark an example agent
-astk benchmark examples/agents/file_qa_agent.py
-
-# Or run directly from your project
+# Run the intelligent benchmark on the example agent
 python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
-```
-
-## 🚀 Installation Options
-
-### Option 1: Global Installation (Recommended)
-
-```bash
-pip install agent-sprint-testkit
-astk --version
-```
-
-### Option 2: Development Setup
-
-```bash
-# Clone repository
-git clone https://github.com/your-org/astk.git
-cd astk
-
-# Create virtual environment
-python3.11 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install in development mode
-pip install -e .
-```
-
-## 💻 CLI Commands
-
-### Core Commands
-
-```bash
-# Initialize new project with templates
-astk init <project-name>
-
-# Run intelligent benchmarks
-astk benchmark <agent-path>
-
-# Generate detailed reports
-astk report <results-dir>
-
-# Show example usage
-astk examples
-```
-
-### Legacy Script Commands (still supported)
-
-```bash
-# Run intelligent benchmark
-python scripts/simple_benchmark.py <agent-path>
-
-# Quick agent runner
-python scripts/simple_run.py <agent-path>
 ```
 
 ## 🤖 Available Agents
@@ -165,30 +161,33 @@ Benchmarks generate comprehensive results:
 
 ## 🛠️ Available Tools
 
-### 🚀 ASTK CLI (Primary Interface)
+### 🚀 Simple Benchmark Runner
 
 ```bash
-# Initialize project with templates
-astk init my-project
-
-# Run intelligent benchmarks
-astk benchmark <agent-path>
-
-# Generate HTML/JSON reports
-astk report <results-dir>
-
-# View usage examples
-astk examples
+python scripts/simple_benchmark.py <agent_path>
 ```
 
-### 🧪 Legacy Script Runners (Still Supported)
+Runs 8 intelligent scenarios and generates detailed performance reports.
+
+### 🔧 Simple Agent Runner
 
 ```bash
-# Direct benchmark execution
-python scripts/simple_benchmark.py <agent-path>
+python scripts/simple_run.py <agent_path>
+```
 
-# Basic agent runner
-python scripts/simple_run.py <agent-path>
+Runs an agent directly with basic output capture.
+
+### 📋 ASTK CLI (Advanced)
+
+```bash
+# Initialize project structure
+python scripts/astk.py init
+
+# Run advanced benchmarks (when package issues resolved)
+python scripts/astk.py run <agent_path>
+
+# View results
+python scripts/astk.py view <results_dir>
 ```
 
 ## 🏗️ Project Structure
@@ -240,16 +239,15 @@ python examples/agents/file_qa_agent.py "What is the purpose of the astk directo
 
 ### Common Issues
 
-**📦 Installation Problems**
+**🐍 Virtual Environment Problems**
 
 ```bash
-# Update pip and reinstall
-pip install --upgrade pip
-pip install --upgrade agent-sprint-testkit
-
-# Verify installation
-astk --version
-which astk
+# Recreate environment
+deactivate
+rm -rf .venv311
+python3.11 -m venv .venv311
+source .venv311/bin/activate
+pip install langchain langchain-openai langchain-core pydantic
 ```
 
 **🔑 OpenAI API Issues**
@@ -262,25 +260,15 @@ echo $OPENAI_API_KEY
 export OPENAI_API_KEY="sk-..."
 ```
 
-**🐍 Development Environment Issues**
+**📦 Import Errors**
 
 ```bash
-# For development setup
-git clone https://github.com/your-org/astk.git
-cd astk
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -e .
+# Install missing packages
+pip install langchain langchain-openai langchain-core pydantic click psutil
+
+# Verify installation
+python -c "from langchain_openai import ChatOpenAI; print('✅ LangChain installed')"
 ```
-
-**🤖 Agent Compatibility**
-
-The framework supports multiple agent types:
-
-- **CLI agents**: Accept queries as command-line arguments
-- **Python modules**: Have a `chat()` method
-- **REST APIs**: Expose `/chat` endpoint
-- **Custom formats**: Use adapter patterns as needed
 
 ## 🚀 Creating Your Own Agent
 
@@ -332,20 +320,5 @@ Apache 2.0 License - See LICENSE file for details.
 **🎯 Ready to benchmark your AI agents? Start with:**
 
 ```bash
-# Install globally
-pip install agent-sprint-testkit
-
-# Run your first benchmark
-astk benchmark examples/agents/file_qa_agent.py
-
-# Or use the legacy script
 python scripts/simple_benchmark.py examples/agents/file_qa_agent.py
-```
-
-**🚀 Get started in 3 commands:**
-
-```bash
-pip install agent-sprint-testkit
-astk init my-tests
-astk examples
 ```

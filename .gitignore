@@ -7,3 +7,16 @@
 .venv310
 
 .venv39
+
+.whl
+
+.egg-info
+
+.pytest_cache
+
+.tar.gz
+
+.DS_Store
+
+.idea
+
