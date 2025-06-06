@@ -241,7 +241,8 @@ Please provide your evaluation as JSON in the following format:
             except json.JSONDecodeError as json_error:
                 # Fallback: Extract numerical score from text
                 try:
-                    score = self._extract_score_from_text(evaluation_text)
+                    score = self._extract_score_from_text(
+                        evaluation_text, evaluator_model)
                     return score, evaluation_text
                 except ValueError as extract_error:
                     raise ValueError(
@@ -252,30 +253,83 @@ Please provide your evaluation as JSON in the following format:
             raise RuntimeError(
                 f"OpenAI evaluation failed for model {evaluator_model}: {str(e)}")
 
-    def _extract_score_from_text(self, text: str) -> float:
-        """Extract numerical score from evaluation text as fallback"""
+    def _parse_openai_response(self, response_text: str, evaluator_model: str) -> float:
+        """Parse OpenAI response to extract numerical score with improved error handling"""
+        if not response_text or response_text.strip() == "":
+            raise ValueError(f"Empty response from {evaluator_model}")
+
+        try:
+            # First try to parse as JSON
+            response_json = json.loads(response_text)
+
+            # Look for score in various common fields
+            score_fields = ['overall_score', 'score',
+                            'rating', 'evaluation_score', 'final_score']
+            for field in score_fields:
+                if field in response_json and isinstance(response_json[field], (int, float)):
+                    score = float(response_json[field])
+                    if 0 <= score <= 10:
+                        return score
+
+            # If JSON but no valid score field found
+            raise ValueError(
+                f"Valid score field not found in JSON response from {evaluator_model}")
+
+        except json.JSONDecodeError:
+            # If not JSON, try to extract numerical score from text
+            return self._extract_score_from_text(response_text, evaluator_model)
+
+    def _extract_score_from_text(self, text: str, evaluator_model: str) -> float:
+        """Extract numerical score from text with model-specific handling"""
         import re
 
-        # Look for patterns like "score: 8.5" or "8.5/10" or "rating of 7"
+        # Enhanced patterns for different score formats
         patterns = [
-            r'score[:\s]+(\d+\.?\d*)',
-            r'(\d+\.?\d*)[/\s]*(?:out of\s*)?10',
-            r'rating[:\s]+(\d+\.?\d*)',
-            r'(\d+\.?\d*)[/\s]*10'
+            r'(?:overall_score|score|rating):\s*(\d+(?:\.\d+)?)',  # "score: 8.5"
+            r'(?:overall_score|score|rating)\s*=\s*(\d+(?:\.\d+)?)',  # "score = 8.5"
+            # "8.5/10" or "8.5 out of 10"
+            r'(\d+(?:\.\d+)?)\s*(?:/\s*10|out\s+of\s+10)',
+            r'(?:score|rating|evaluation).*?(\d+(?:\.\d+)?)',  # "My score is 8.5"
+            # "I give it 8.5"
+            r'(?:I\s+(?:give|rate|score)|rating|evaluation).*?(\d+(?:\.\d+)?)',
+            # "8.5/10" or "8.5 points"
+            r'\b(\d+(?:\.\d+)?)\s*(?:/10|points?)\b',
         ]
 
         for pattern in patterns:
-            match = re.search(pattern, text.lower())
-            if match:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            for match in matches:
                 try:
-                    score = float(match.group(1))
-                    return min(max(score, 0), 10)  # Clamp to 0-10 range
+                    score = float(match)
+                    if 0 <= score <= 10:
+                        return score
                 except ValueError:
                     continue
 
-        # Instead of default 5.0, raise an error to indicate real failure
+        # Special handling for newer models that might use different formats
+        if evaluator_model in ['gpt-4.1-mini', 'o4-mini']:
+            # Try more flexible patterns for these models
+            flexible_patterns = [
+                r'(\d+(?:\.\d+)?)\s*(?:out of|/)\s*(?:10|ten)',
+                r'(?:score|rating|grade).*?(\d+(?:\.\d+)?)',
+                # Score at end of line
+                r'(\d+(?:\.\d+)?)(?:\s*(?:out of 10|/10))?$',
+            ]
+
+            for pattern in flexible_patterns:
+                matches = re.findall(
+                    pattern, text, re.IGNORECASE | re.MULTILINE)
+                for match in matches:
+                    try:
+                        score = float(match)
+                        if 0 <= score <= 10:
+                            return score
+                    except ValueError:
+                        continue
+
+        # If no score found, raise error with more context
         raise ValueError(
-            f"Could not extract numerical score from evaluation text: {text[:200]}...")
+            f"Could not extract numerical score from {evaluator_model} evaluation. Response: {text[:200]}...")
 
     def _evaluate_basic_criteria(self, response: str, success_criteria: SuccessCriteria) -> float:
         """Evaluate basic regex and semantic criteria"""

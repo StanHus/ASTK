@@ -945,7 +945,7 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
 
     # Save results if requested
     if save_results and results:
-        results_file = f"rigorous_evaluation/{session_id}.json"
+        results_file = f"rigorous_evaluation_{session_id}.json"
 
         # Create comprehensive session data
         session_data = {
@@ -984,6 +984,9 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
                 session_data, results_file.replace('.json', '_detailed.md'))
 
         click.echo(f"💾 Results saved to: {results_file}")
+
+    # move the file into rigorous_evaluation directory
+    os.rename(results_file, f'rigorous_evaluation/{results_file}')
 
     # Exit with appropriate code
     if pass_rate >= 0.7:  # 70% pass rate threshold
