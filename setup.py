@@ -13,15 +13,17 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: Other/Proprietary License",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Software Development :: Testing",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.11",
+    python_requires=">=3.9",
     install_requires=[
         "langchain>=0.1.0",
         "langchain-openai>=0.0.2",
@@ -34,11 +36,13 @@ setup(
         "python-dotenv>=1.0.0",
         "requests>=2.28.0",
         "aiohttp>=3.8.0",
+        "pyyaml>=6.0.0",
     ],
     extras_require={
         "dev": [
             "pytest>=7.0.0",
             "pytest-asyncio>=0.21.0",
+            "pytest-cov>=4.0.0",
             "black>=23.0.0",
             "isort>=5.12.0",
             "mypy>=1.0.0",
