@@ -425,10 +425,6 @@ python scripts/simple_benchmark.py path/to/your_agent.py
 2. Add benchmark scenarios in `scripts/simple_benchmark.py`
 3. Test with: `python scripts/simple_benchmark.py your_agent.py`
 
-## 📄 License
-
-Apache 2.0 License - See LICENSE file for details.
-
 ---
 
 **🎯 Ready to benchmark your AI agents? Start with:**
