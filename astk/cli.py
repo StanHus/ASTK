@@ -905,7 +905,7 @@ def run(agent_path: str, scenarios: str, evaluators: tuple, parallel: bool,
 
     # Save results if requested
     if save_results and results:
-        results_file = f"rigorous_evaluation_{session_id}.json"
+        results_file = f"rigorous_evaluation/{session_id}.json"
 
         # Create comprehensive session data
         session_data = {
