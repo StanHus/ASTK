@@ -98,7 +98,7 @@ astk evals run eval_12345 --from-logs --days 30
 
 ```bash
 # A/B test different models
-astk evals compare eval_12345 gpt-4-mini gpt-4-turbo
+astk evals compare eval_12345 gpt-4o-mini gpt-4-turbo
 
 # Get professional comparison dashboard
 # Statistical significance testing

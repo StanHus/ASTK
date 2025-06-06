@@ -67,7 +67,7 @@ Design, implement and open-source **AgentSprint TestKit** to:
 
 1. **Runner** – async orchestrator launches agent container, feeds scenarios, captures traces.
 2. **Scenario store** – versioned YAML in repo; option for S3 cache.
-3. **Persona synthesiser** – DeepEval API + gpt-4 backend for persona prompts.
+3. **Persona synthesiser** – DeepEval API + GPT-4o backend for persona prompts.
 4. **Metric plugins** – G-Eval, SelfCheckGPT, latency, cost, success-rate, noise-sensitivity.
 5. **Tracer** – OpenLLMetry + OTLP exporter; tags spans with `agent.id`, `scenario.id`, `persona.id`.
 6. **Chaos layer** – garak probes + internal “agent-monkey” fault injector.

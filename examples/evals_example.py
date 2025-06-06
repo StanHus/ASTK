@@ -107,7 +107,7 @@ async def demo_evals_integration():
         print(f"   astk evals run {eval_id}")
         print("3. View results in OpenAI dashboard")
         print("4. Compare with different models using:")
-        print(f"   astk evals compare {eval_id} gpt-4-mini gpt-4-turbo")
+        print(f"   astk evals compare {eval_id} gpt-4o-mini gpt-4-turbo")
 
     except Exception as e:
         print(f"❌ Error: {e}")
@@ -209,7 +209,7 @@ def cli_usage_examples():
          "python -m astk.cli evals create my_agent.py --eval-type code_qa --grader gpt-4"),
         ("Run evaluation", "python -m astk.cli evals run eval_12345"),
         ("Compare two models",
-         "python -m astk.cli evals compare eval_12345 gpt-4-mini gpt-4-turbo"),
+         "python -m astk.cli evals compare eval_12345 gpt-4o-mini gpt-4-turbo"),
         ("Install with evals support",
          "pip install agent-sprint-testkit[evals]"),
     ]
